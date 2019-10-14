@@ -101,11 +101,112 @@ app.get('/pagecount', function (req, res) {
     initDb(function(err){});
   }
   if (db) {
-    db.collection('counts').count(function(err, count ){
+    //db.collection('counts').count(function(err, count ){
+    db.counts.count(function(err, count ){
+      console.log('');
       res.send('{ pageCount: ' + count + '}');
     });
   } else {
     res.send('{ pageCount: -1 }');
+  }
+});
+
+app.get('/email-box', function (req, res) {
+  'use strict';
+  const nodemailer = require('nodemailer');
+
+  // async..await is not allowed in global scope, must use a wrapper
+  async function main() {
+      // Generate test SMTP service account from ethereal.email
+      // Only needed if you don't have a real mail account for testing
+      let testAccount = await nodemailer.createTestAccount();
+
+      // create reusable transporter object using the default SMTP transport
+      let transporter = nodemailer.createTransport({
+          host: 'smtp.office365.com',
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+              user: 'andrew-openshift@outlook.com',
+              pass: 'Centr@l95051'
+          }
+      });
+//      var transporter = nodemailer.createTransport("SMTP",{
+//        service: "Gmail",
+//        auth: {
+//            user: "andrew2004@gmail.com",
+//            pass: "userpass"
+//        }
+//      });
+
+      // send mail with defined transport object
+      let info = await transporter.sendMail({
+          from: '"Andrew S 👻" <andrew-openshift@outlook.com>', // sender address
+          to: 'ashaw85@hotmail.com', // list of receivers
+          subject: 'Hello ✔', // Subject line
+          text: 'Hello world?', // plain text body
+          html: '<b>Hello world?</b>' // html body
+      });
+
+      console.log('Message sent: %s', info.messageId);
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+      // Preview only available when sending through an Ethereal account
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  }
+
+  main().catch(console.error);
+  
+  // try to initialize the db on every request if it's not already
+  // initialized.
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    
+  } else {
+    
+  }
+});
+
+app.get('/slate/:key', function(req, res) {
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    let slates = db.collection('slates');
+    let criteria;
+    //var slates = db.slates;
+    //if ()
+    // Create a document with request IP and current time of request
+    if (typeof req.params.key === "string") {
+      //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
+    }
+    else {
+      console.log('Key was object');
+    }
+    //res.render('slate.html', {  });
+    //slates.find()
+    //keyCriteria = JSON.parse(req.params.key);
+    keyCriteria = decodeURIComponent(req.params.key);
+    //keyCriteria = '{"$gt":""}';
+    //keyCriteria = JSON.stringify(keyCriteria);
+    console.log('keyCriteria:' + keyCriteria);
+    criteria = {
+//        "key": "5" //works
+        "key": keyCriteria //work
+    }
+    let cursor = slates.find(criteria);
+    //res.send('find:'+JSON.stringify(slates.find(criteria)));
+    cursor.toArray().then((data)=>{
+      console.log('data:'+data);
+      res.send('data:'+JSON.stringify(data));
+    },
+        ()=>{});
+    //res.send('find:'+JSON.stringify());
+  } else {
+    //res.render('slate.html', {  });
   }
 });
 
