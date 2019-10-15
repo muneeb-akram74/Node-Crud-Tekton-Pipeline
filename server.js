@@ -176,7 +176,7 @@ app.get('/slate/:key', function(req, res) {
   }
   if (db) {
     let slates = db.collection('slates');
-    let criteria;
+    let criteria, cursor;
     //var slates = db.slates;
     //if ()
     // Create a document with request IP and current time of request
@@ -190,21 +190,30 @@ app.get('/slate/:key', function(req, res) {
     //slates.find()
     //keyCriteria = JSON.parse(req.params.key);
     keyCriteria = decodeURIComponent(req.params.key);
-    //keyCriteria = '{"$gt":""}';
+    //keyCriteria = {"$gt":""};
+    //keyCriteria = "5";
     //keyCriteria = JSON.stringify(keyCriteria);
     console.log('keyCriteria:' + keyCriteria);
     criteria = {
 //        "key": "5" //works
-        "key": keyCriteria //work
+        "key": keyCriteria //works
+        //"key": {"$gt":""}
     }
-    let cursor = slates.find(criteria);
-    //res.send('find:'+JSON.stringify(slates.find(criteria)));
-    cursor.toArray().then((data)=>{
-      console.log('data:'+data);
-      res.send('data:'+JSON.stringify(data));
-    },
-        ()=>{});
-    //res.send('find:'+JSON.stringify());
+    console.log('criteria:'+JSON.stringify(criteria));
+    if (typeof keyCriteria == 'string') {
+      cursor = slates.find(criteria);
+      //res.send('find:'+JSON.stringify(slates.find(criteria)));
+      cursor.toArray().then((data)=>{
+        console.log('data:'+data);
+        res.send(JSON.stringify(data));
+      },
+          ()=>{});
+      //res.send('find:'+JSON.stringify());
+    }
+    else {
+      console.log('criteria was object');
+      res.render('slate.html', {  });
+    }
   } else {
     //res.render('slate.html', {  });
   }
