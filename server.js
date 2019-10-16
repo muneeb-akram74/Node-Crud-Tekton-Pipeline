@@ -7,6 +7,7 @@ Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
+app.use(express.json());
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -163,6 +164,39 @@ app.get('/email-box', function (req, res) {
   }
 });
 
+app.get('/slate/:key', function(req, res) {
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    res.render('slate.html', {  });
+  }
+});
+
+app.post('/slate/post/:key', function(req, res) {
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    let slates = db.collection('slates');
+    let message;
+    if (req.params.key === '123' && req.body.message.length>3) {
+      message=req.body.message.substring(0,3);
+    }
+    else {
+      message=req.body.message;
+    }
+    if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
+      slates.update({key: req.params.key},
+          {$set: {message: message}});
+      res.send('{status: "processed"}');
+    }
+    else {
+      res.send('{status: "not processed"}');
+    }
+  }
+});
+
 app.get('/slate/get/:key', function(req, res) {
   if (!db) {
     initDb(function(err){});
@@ -183,7 +217,8 @@ app.get('/slate/get/:key', function(req, res) {
       },
       (err)=>reject('err:'+err));
     });
-    // Create a document with request IP and current time of request
+
+    // Only needed to set up initial sample.
     checkSampleExists.then((dataArray)=>{
       console.log('dataArray:'+JSON.stringify(dataArray));
     },
@@ -192,6 +227,7 @@ app.get('/slate/get/:key', function(req, res) {
       slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
         fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
     });
+
     if (typeof req.params.key === "string") {
       //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
     }

@@ -1,1 +1,53 @@
-Slate
+<html>
+  <body>
+    <h1>Slate</h1>
+    <form>
+      <label>Message: </label>
+<!--       <input id="message"></input>
+ -->
+      <div>
+        <textarea id="messageTextArea" rows="10" cols="50" maxlength="3"></textarea>
+      </div>
+      <div>
+        <input id="submitMessage" type="submit"></input>
+      </div>
+    </form>
+    <script>
+    async function main() {
+      const response = await fetch('get/'+location.href.match(/slate\/(.*)/)[1]);
+      const getData = await response.json();
+      document.getElementById('messageTextArea').value = getData[0].message;
+      document.getElementById('submitMessage').onclick = handleClick;
+    }
+    main();
+    
+    async function handleClick(e) {
+      //document.getElementById('message').value
+      e.preventDefault(0);
+      try {
+        const data = await postData('post/'+location.href.match(/slate\/(.*)/)[1],
+            { message: document.getElementById('messageTextArea').value } );
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+    
+    async function postData(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrer: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return await response.json();
+    }
+    </script>
+  </body>
+</html>
