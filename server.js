@@ -123,26 +123,19 @@ app.get('/email-box', function (req, res) {
 
       // create reusable transporter object using the default SMTP transport
       let transporter = nodemailer.createTransport({
-          host: 'smtp.office365.com',
-          port: 587,
-          secure: false, // true for 465, false for other ports
+          host: 'in-v3.mailjet.com',
+          port: 465,
+          secure: true, // true for 465, false for other ports
           auth: {
-              user: 'andrew-openshift@outlook.com',
-              pass: 'Centr@l95051'
+              user: 'dc455a1cc7b71b0231476013ce7aadee',
+              pass: '01251cd7d61036c4d1ef4bfd64ea3343'
           }
       });
-//      var transporter = nodemailer.createTransport("SMTP",{
-//        service: "Gmail",
-//        auth: {
-//            user: "andrew2004@gmail.com",
-//            pass: "userpass"
-//        }
-//      });
 
-      // send mail with defined transport object
+      // send mail with defined transport object // 👻
       let info = await transporter.sendMail({
-          from: '"Andrew S 👻" <andrew-openshift@outlook.com>', // sender address
-          to: 'ashaw85@hotmail.com', // list of receivers
+          from: '"Andrew Sh" <andrew95051@outlook.com>', // sender address
+          to: 'andrew2004@gmail.com', // list of receivers
           subject: 'Hello ✔', // Subject line
           text: 'Hello world?', // plain text body
           html: '<b>Hello world?</b>' // html body
@@ -170,52 +163,59 @@ app.get('/email-box', function (req, res) {
   }
 });
 
-app.get('/slate/:key', function(req, res) {
+app.get('/slate/get/:key', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
     let slates = db.collection('slates');
     let criteria, cursor;
-    //var slates = db.slates;
-    //if ()
+    let checkSampleExists = new Promise((resolve, reject) => {
+      let sampleCursor = slates.find({key: "123"});
+      console.log('checkSampleExists');
+      sampleCursor.toArray().then((dataArray)=> {
+        if (dataArray.length > 0) {
+          resolve(dataArray);
+        }
+        else {
+          reject(dataArray);
+        }
+      },
+      (err)=>reject('err:'+err));
+    });
     // Create a document with request IP and current time of request
+    checkSampleExists.then((dataArray)=>{
+      console.log('dataArray:'+JSON.stringify(dataArray));
+    },
+    (err)=>{
+      console.log('err:'+JSON.stringify(err));
+      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
+        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
+    });
     if (typeof req.params.key === "string") {
       //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
     }
     else {
       console.log('Key was object');
     }
-    //res.render('slate.html', {  });
-    //slates.find()
-    //keyCriteria = JSON.parse(req.params.key);
     keyCriteria = decodeURIComponent(req.params.key);
-    //keyCriteria = {"$gt":""};
-    //keyCriteria = "5";
-    //keyCriteria = JSON.stringify(keyCriteria);
-    console.log('keyCriteria:' + keyCriteria);
     criteria = {
-//        "key": "5" //works
-        "key": keyCriteria //works
-        //"key": {"$gt":""}
+        "key": keyCriteria
     }
-    console.log('criteria:'+JSON.stringify(criteria));
     if (typeof keyCriteria == 'string') {
       cursor = slates.find(criteria);
-      //res.send('find:'+JSON.stringify(slates.find(criteria)));
       cursor.toArray().then((data)=>{
-        console.log('data:'+data);
         res.send(JSON.stringify(data));
       },
-          ()=>{});
-      //res.send('find:'+JSON.stringify());
+      ()=>{});
     }
-    else {
-      console.log('criteria was object');
-      res.render('slate.html', {  });
-    }
-  } else {
-    //res.render('slate.html', {  });
+//    else {
+//      console.log('criteria was object');
+//      res.render('slate.html', {  });
+//    }
+  } // if (db) 
+  else {
+    res.render('slate.html', {  });
   }
 });
 
