@@ -164,16 +164,7 @@ app.get('/email-box', function (req, res) {
   }
 });
 
-app.get('/slate/:key', function(req, res) {
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    res.render('slate.html', {  });
-  }
-});
-
-app.post('/slate/post/:key', function(req, res) {
+app.post('/slate/post/:key/:senderkey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
@@ -197,11 +188,13 @@ app.post('/slate/post/:key', function(req, res) {
   }
 });
 
-app.get('/slate/get/:key', function(req, res) {
+app.get('/slate/get/:key/:senderkey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
+    console.log('at API, key:'+req.params.key);
+    console.log('senderkey:'+req.params.senderkey);
     let slates = db.collection('slates');
     let criteria, cursor;
     let checkSampleExists = new Promise((resolve, reject) => {
@@ -219,14 +212,14 @@ app.get('/slate/get/:key', function(req, res) {
     });
 
     // Only needed to set up initial sample.
-    checkSampleExists.then((dataArray)=>{
-      console.log('dataArray:'+JSON.stringify(dataArray));
-    },
-    (err)=>{
-      console.log('err:'+JSON.stringify(err));
-      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
-        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
-    });
+//    checkSampleExists.then((dataArray)=>{
+//      console.log('dataArray:'+JSON.stringify(dataArray));
+//    },
+//    (err)=>{
+//      console.log('err:'+JSON.stringify(err));
+//      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
+//        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
+//    });
 
     if (typeof req.params.key === "string") {
       //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
@@ -251,6 +244,17 @@ app.get('/slate/get/:key', function(req, res) {
 //    }
   } // if (db) 
   else {
+    res.render('slate.html', {  });
+  }
+});
+
+app.get('/slate/:key/:senderkey?', function(req, res) {
+  console.log('key:'+req.params.key);
+  console.log('senderkey:'+req.params.senderkey);
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
     res.render('slate.html', {  });
   }
 });
