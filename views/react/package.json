@@ -1,0 +1,46 @@
+{
+  "name": "billing",
+  "version": "1.0.0",
+  "scripts": {
+    "build-2019-08-24": "rm -r lib; babel src -d lib",
+    "build-2019-09-25": "babel build/js/src -d build/js/lib && npx webpack",
+    "build": "npx webpack",
+    "npx-webpack": "npx webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:watch": "watch \"npm run build && gulp\" src"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
+    "browser-sync": "^2.24.7",
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^0.2.9",
+    "gulp-less": "^4.0.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-uglify": "^3.0.0",
+    "watch": "^1.0.1",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "description": ""
+}

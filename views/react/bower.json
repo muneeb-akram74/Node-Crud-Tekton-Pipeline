@@ -1,0 +1,24 @@
+{
+  "name": "amounts",
+  "description": "widget",
+  "main": "",
+  "keywords": [
+    "amounts",
+    "widget"
+  ],
+  "authors": [
+    "React Author"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+  }
+}
