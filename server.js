@@ -164,7 +164,7 @@ app.get('/email-box', function (req, res) {
   }
 });
 
-app.post('/slate/post/:key/:senderkey?', function(req, res) {
+app.post('/slate/post/:key/:senderKey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
@@ -179,7 +179,9 @@ app.post('/slate/post/:key/:senderkey?', function(req, res) {
     }
     if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
       slates.update({key: req.params.key},
-          {$set: {message: message}});
+          {$set: {message: message,
+            updateTime: Date.now()}}
+      );
       res.send('{status: "processed"}');
     }
     else {
@@ -188,13 +190,13 @@ app.post('/slate/post/:key/:senderkey?', function(req, res) {
   }
 });
 
-app.get('/slate/get/:key/:senderkey?', function(req, res) {
+app.get('/slate/get/:key/:senderKey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
     console.log('at API, key:'+req.params.key);
-    console.log('senderkey:'+req.params.senderkey);
+    console.log('senderKey:'+req.params.senderKey);
     let slates = db.collection('slates');
     let criteria, cursor;
     let checkSampleExists = new Promise((resolve, reject) => {
@@ -212,14 +214,14 @@ app.get('/slate/get/:key/:senderkey?', function(req, res) {
     });
 
     // Only needed to set up initial sample.
-//    checkSampleExists.then((dataArray)=>{
-//      console.log('dataArray:'+JSON.stringify(dataArray));
-//    },
-//    (err)=>{
-//      console.log('err:'+JSON.stringify(err));
-//      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
-//        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
-//    });
+    checkSampleExists.then((dataArray)=>{
+      console.log('dataArray:'+JSON.stringify(dataArray));
+    },
+    (err)=>{
+      console.log('err:'+JSON.stringify(err));
+      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
+        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: '95050'});
+    });
 
     if (typeof req.params.key === "string") {
       //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
@@ -234,6 +236,11 @@ app.get('/slate/get/:key/:senderkey?', function(req, res) {
     if (typeof keyCriteria == 'string') {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
+        if ( !(req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey)) {
+          slates.update(criteria,
+          {$set: {viewedTime: Date.now()}}
+          );
+        }
         res.send(JSON.stringify(data));
       },
       ()=>{});
@@ -248,9 +255,9 @@ app.get('/slate/get/:key/:senderkey?', function(req, res) {
   }
 });
 
-app.get('/slate/:key/:senderkey?', function(req, res) {
+app.get('/slate/:key/:senderKey?', function(req, res) {
   console.log('key:'+req.params.key);
-  console.log('senderkey:'+req.params.senderkey);
+  console.log('senderKey:'+req.params.senderKey);
   if (!db) {
     initDb(function(err){});
   }
