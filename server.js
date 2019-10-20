@@ -8,7 +8,13 @@ Object.assign=require('object-assign')
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 app.use(express.json());
-app.use('/react', express.static('views/react'));
+// able to access main.js with:, but not GETing properly
+app.use('/react/slate/', express.static('views/react'));
+//blocks main.js from loading if declared early:
+app.use('/react/slate/:key?', express.static('views/react'));
+//app.use('/react/slate/:key(\d+)', express.static('views/react')); // /user/:userId(\d+)
+//works with /123/0
+app.use('/react/slate/:key?/:senderkey?', express.static('views/react'));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',

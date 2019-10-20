@@ -24,7 +24,7 @@ const viewCountStore = createStore(reducerViewCount);
 
 export default function UserAndId(props) {
 //  return (<div id="hello">Hello {props.user}, id {props.userId}, new name {props.newName}</div>);
-  return (<div id="hello">Hello {props.user}, id {props.userId}</div>);
+  return (<div id="hello">Hello {props.user}, id {props.userId}, message {props.message}</div>);
 }
 
 //Context lets us pass a value deep into the component tree
