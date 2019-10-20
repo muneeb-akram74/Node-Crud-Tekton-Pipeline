@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width">
+    <title>Slate</title>
+    <link rel="stylesheet" href="./billing.css">
+  </head>
+  <body>
+
+    <h1>Slate</h1>
+    
+    <div id="slateForm"></div>
+
+    <footer>
+      <p>This page demonstrates using React and Redux with build tooling.</p>
+     </footer>
+
+
+    <div class="hide">
+      <div id="intro"></div>
+      <div id="viewCount"></div>
+      <div class="communications-properties">
+        <div class="row">
+            <span id="communication-tools-container"></span>
+          </div>
+      </div>
+  
+      <div id="bill_button_container"></div>
+    </div>
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <!-- 
+	    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+	    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script> 
+	-->
+    <!-- 
+	    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+	    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script> 
+	-->
+    <!-- <script src="react.production.min.js"></script> -->
+	<!--     
+	<script src="react-dom.production.min.js"></script>
+	 -->    
+    <!-- Load our React component. -->
+    <!-- 
+    <script src="lib/billing.js"></script> 
+    <script src="lib/bill_amount.js"></script>
+    <script src="lib/bill_amount_2.js"></script> 
+    -->
+
+	<!-- 
+    <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+	 -->
+ 	<!-- JSX cannot be read with build/js/src/app.min.js 
+ 	define is not defined with build/js/lib/app.min.js
+ 	Uncaught ReferenceError: React is not defined with dist/main.js
+ 	-->
+<!--     
+ 	<script type="text/javascript" src="dist/main.js"></script>
+	<script type="module" src="build/js/src/app.min.js"></script>
+	<script type="module" src="build/js/lib/app.min.js"></script>
+ 	<script type="text/javascript" src="dist/main.js"></script>
+ -->
+ 	<script type="text/javascript" src="main.js"></script>
+  </body>
+</html>

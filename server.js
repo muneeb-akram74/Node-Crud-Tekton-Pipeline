@@ -8,6 +8,13 @@ Object.assign=require('object-assign')
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 app.use(express.json());
+// able to access main.js with:, but not GETing properly
+app.use('/react/slate/', express.static('views/react'));
+//blocks main.js from loading if declared early:
+app.use('/react/slate/:key?', express.static('views/react'));
+//app.use('/react/slate/:key(\d+)', express.static('views/react')); // /user/:userId(\d+)
+//works with /123/0
+app.use('/react/slate/:key?/:senderkey?', express.static('views/react'));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -95,6 +102,19 @@ app.get('/', function (req, res) {
   }
 });
 
+app.get('/react', function (req, res) {
+  // try to initialize the db on every request if it's not already
+  // initialized.
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    res.render('react/index.html', {  });
+  } else {
+    res.render('react/index.html', {  });
+  }
+});
+
 app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
@@ -112,7 +132,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-app.get('/email-box', function (req, res) {
+app.get('/email-box95050', function (req, res) {
   'use strict';
   const nodemailer = require('nodemailer');
 
@@ -164,16 +184,7 @@ app.get('/email-box', function (req, res) {
   }
 });
 
-app.get('/slate/:key', function(req, res) {
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    res.render('slate.html', {  });
-  }
-});
-
-app.post('/slate/post/:key', function(req, res) {
+app.post('/slate/post/:key/:senderKey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
@@ -188,20 +199,24 @@ app.post('/slate/post/:key', function(req, res) {
     }
     if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
       slates.update({key: req.params.key},
-          {$set: {message: message}});
-      res.send('{status: "processed"}');
+          {$set: {message: message,
+            updateTime: Date.now()}}
+      );
+      res.send('{"status": "processed"}');
     }
     else {
-      res.send('{status: "not processed"}');
+      res.send('{"status": "not processed"}');
     }
   }
 });
 
-app.get('/slate/get/:key', function(req, res) {
+app.get('/slate/get/:key/:senderKey?', function(req, res) {
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
+    console.log('at API, key:'+req.params.key);
+    console.log('senderKey:'+req.params.senderKey);
     let slates = db.collection('slates');
     let criteria, cursor;
     let checkSampleExists = new Promise((resolve, reject) => {
@@ -225,7 +240,7 @@ app.get('/slate/get/:key', function(req, res) {
     (err)=>{
       console.log('err:'+JSON.stringify(err));
       slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
-        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.'});
+        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: '95050'});
     });
 
     if (typeof req.params.key === "string") {
@@ -241,6 +256,11 @@ app.get('/slate/get/:key', function(req, res) {
     if (typeof keyCriteria == 'string') {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
+        if ( !(req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey)) {
+          slates.update(criteria,
+          {$set: {viewedTime: Date.now()}}
+          );
+        }
         res.send(JSON.stringify(data));
       },
       ()=>{});
@@ -251,6 +271,17 @@ app.get('/slate/get/:key', function(req, res) {
 //    }
   } // if (db) 
   else {
+    res.render('slate.html', {  });
+  }
+});
+
+app.get('/slate/:key/:senderKey?', function(req, res) {
+  console.log('key:'+req.params.key);
+  console.log('senderKey:'+req.params.senderKey);
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
     res.render('slate.html', {  });
   }
 });

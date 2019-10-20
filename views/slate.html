@@ -8,15 +8,26 @@
       <div>
         <textarea id="messageTextArea" rows="10" cols="50" maxlength="3"></textarea>
       </div>
+      <p id="readStatus"></p>
       <div>
         <input id="submitMessage" type="submit"></input>
       </div>
     </form>
     <script>
     async function main() {
-      const response = await fetch('get/'+location.href.match(/slate\/(.*)/)[1]);
+	  let response;
+      //const response = await fetch('get/'+location.href.match(/slate\/(.*)/)[1] + '/senderKey/' + );
+      if (location.href.match(/slate\/(.*)\/(.*)/) !== null) {
+        response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
+            '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]);
+      }
+      else {
+        response = await fetch('get/'+location.href.match(/slate\/(.*)/)[1]);
+      }
       const getData = await response.json();
       document.getElementById('messageTextArea').value = getData[0].message;
+      document.getElementById('readStatus').innerHTML = getData[0].viewedTime > getData[0].updateTime ? 
+          'Read by recipient.' : 'Not read by recipient.';
       document.getElementById('submitMessage').onclick = handleClick;
     }
     main();
@@ -25,7 +36,7 @@
       //document.getElementById('message').value
       e.preventDefault(0);
       try {
-        const data = await postData('post/'+location.href.match(/slate\/(.*)/)[1],
+        const data = await postData('/slate/post/'+location.href.match(/slate\/(.*)/)[1],
             { message: document.getElementById('messageTextArea').value } );
       }
       catch (error) {
