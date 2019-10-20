@@ -5,7 +5,7 @@ module.exports = {
 
 //  entry: './build/js/app.min.js',
 //  entry: './src/billing.js',
-  entry: './src/average_balance.js',
+  entry: './src/communication-tools.js',
 // does not work:
 //    entry: './src',
 //  entry: './build/js/src/app.min.js',

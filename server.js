@@ -132,7 +132,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-app.get('/email-box', function (req, res) {
+app.get('/email-box95050', function (req, res) {
   'use strict';
   const nodemailer = require('nodemailer');
 
@@ -202,10 +202,10 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
           {$set: {message: message,
             updateTime: Date.now()}}
       );
-      res.send('{status: "processed"}');
+      res.send('{"status": "processed"}');
     }
     else {
-      res.send('{status: "not processed"}');
+      res.send('{"status": "not processed"}');
     }
   }
 });

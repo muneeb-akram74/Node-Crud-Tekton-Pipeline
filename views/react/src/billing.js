@@ -14,7 +14,7 @@ function reducerViewCount(state=initialViewCount, action) {
   if(action.type === 'INCREMENT'){
     //return state + 1;
     return {
-      count: state.count + 2
+      count: state.count + 1
     }
   }
   // remember to return a default
@@ -45,8 +45,8 @@ class ThemedButton extends React.Component {
   }
 
   // Assign a contextType to read the current theme context.
-// React will find the closest theme Provider above and use its value.
-// In this example, the current theme is "dark".
+  // React will find the closest theme Provider above and use its value.
+  // In this example, the current theme is "dark".
   static contextType = ThemeContext;
   render() {
    return <Button theme={this.context} timesClicked={store.getState()} nameFromChild={this.state.nameFromChild} handleChildInputName={this.handleChildInputName} />;
@@ -55,7 +55,6 @@ class ThemedButton extends React.Component {
 }
 
 function Button(props) {
-  console.log('theme : ' + props.theme);
   return (
       <div id="newName">
         <span id="myButton" className={props.theme}>{props.timesClicked} billed. New name: {props.nameFromChild}</span>
@@ -107,11 +106,7 @@ class BillingWidget extends React.Component {
 }
 
 let mapStateToProps = (state) => { 
-  console.log('mapStateToProps, ' + JSON.stringify(state));
   return state;
-//  return {
-//    count: state.count + 3
-//  };
 };
 
 function mapDispatchToProps(dispatch) {

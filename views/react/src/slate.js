@@ -15,7 +15,6 @@ export default class Slate extends React.Component {
   }
   
   static getDerivedStateFromError(error) {
-    console.log('getDerivedState');
     return { hasError: true };
   }
   
