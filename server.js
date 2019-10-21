@@ -261,6 +261,7 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
           {$set: {viewedTime: Date.now()}}
           );
         }
+        delete data[0].senderKey;
         res.send(JSON.stringify(data));
       },
       ()=>{});
