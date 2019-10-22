@@ -243,6 +243,30 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
         fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: '95050'});
     });
 
+    let checkStarterSlateExists = new Promise((resolve, reject) => {
+      let sampleCursor = slates.find({key: "andrew95050"});
+      console.log('checkStarterExists');
+      sampleCursor.toArray().then((dataArray)=> {
+        if (dataArray.length > 0) {
+          resolve(dataArray);
+        }
+        else {
+          reject(dataArray);
+        }
+      },
+      (err)=>reject('err:'+err));
+    });
+
+    // Only needed to set up initial sample.
+    checkStarterSlateExists.then((dataArray)=>{
+      console.log('dataArray:'+JSON.stringify(dataArray));
+    },
+    (err)=>{
+      console.log('err:'+JSON.stringify(err));
+      slates.insert({ip: req.ip, date: Date.now(), key: 'andrew95050', toEmail: 'ashaw85@hotmail.com', 
+        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: 'outsideCentral'});
+    });
+
     if (typeof req.params.key === "string") {
       //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
     }

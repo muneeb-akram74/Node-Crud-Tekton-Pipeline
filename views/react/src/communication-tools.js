@@ -12,6 +12,7 @@ class CommunicationTools extends React.Component {
         this.state = {
             message: '',
             loading: false,
+            messageMaxLength: 3,
             billFieldLoadingMessage: 'Loading...'
         };
     }
@@ -41,11 +42,12 @@ class CommunicationTools extends React.Component {
         if (getData.length > 0) {
           this.setState({
             message: getData[0].message,
+            messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
                 'Read by recipient.' : 'Not read by recipient.'
           });
         }
-        ReactDOM.render(<Slate message={this.state.message} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} />, document.getElementById('slateForm'));
+        ReactDOM.render(<Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} />, document.getElementById('slateForm'));
       }
       main = main.bind(this);
       main();
