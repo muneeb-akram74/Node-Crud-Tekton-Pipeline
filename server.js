@@ -276,16 +276,22 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
     if (typeof keyCriteria == 'string') {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
-        if (req.params.senderKey !== undefined && data != undefined &&
-            data.length > 0 && data[0].hasOwnProperty('senderKey') && req.params.senderKey == data[0].senderKey) {
+        let updateViewedTime = () => {
           slates.update(criteria,
-          {$set: {viewedTime: Date.now()}}
-          );
-          delete data[0].senderKey;
+              {$set: {viewedTime: Date.now()}}
+              );
+        }
+        if (data != undefined &&
+            data.length > 0 && data[0].hasOwnProperty('senderKey')) {
+              if (req.params.senderKey !== undefined && req.params.senderKey !== data[0].senderKey) {
+                updateViewedTime();
+              }
+              delete data[0].senderKey;
+        }
+        else {
+          updateViewedTime();
         }
 
-//        if (data[0] !== undefined && data[0].hasOwnProperty('senderKey')) {
-//        }
         res.send(JSON.stringify(data));
       },
       ()=>{});
