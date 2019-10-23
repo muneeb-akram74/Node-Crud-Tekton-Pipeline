@@ -221,7 +221,6 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
     let criteria, cursor;
     let checkSampleExists = new Promise((resolve, reject) => {
       let sampleCursor = slates.find({key: "123"});
-      console.log('checkSampleExists');
       sampleCursor.toArray().then((dataArray)=> {
         if (dataArray.length > 0) {
           resolve(dataArray);
@@ -235,7 +234,6 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
 
     // Only needed to set up initial sample.
     checkSampleExists.then((dataArray)=>{
-      console.log('dataArray:'+JSON.stringify(dataArray));
     },
     (err)=>{
       console.log('err:'+JSON.stringify(err));
@@ -245,7 +243,6 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
 
     let checkStarterSlateExists = new Promise((resolve, reject) => {
       let sampleCursor = slates.find({key: "andrew95050"});
-      console.log('checkStarterExists');
       sampleCursor.toArray().then((dataArray)=> {
         if (dataArray.length > 0) {
           resolve(dataArray);
@@ -259,7 +256,6 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
 
     // Only needed to set up initial sample.
     checkStarterSlateExists.then((dataArray)=>{
-      console.log('dataArray:'+JSON.stringify(dataArray));
     },
     (err)=>{
       console.log('err:'+JSON.stringify(err));
@@ -280,12 +276,16 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
     if (typeof keyCriteria == 'string') {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
-        if ( !(req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey)) {
+        if (req.params.senderKey !== undefined && data != undefined &&
+            data.length > 0 && data[0].hasOwnProperty('senderKey') && req.params.senderKey == data[0].senderKey) {
           slates.update(criteria,
           {$set: {viewedTime: Date.now()}}
           );
+          delete data[0].senderKey;
         }
-        delete data[0].senderKey;
+
+//        if (data[0] !== undefined && data[0].hasOwnProperty('senderKey')) {
+//        }
         res.send(JSON.stringify(data));
       },
       ()=>{});
