@@ -1,7 +1,8 @@
 //  OpenShift sample Node application
 var express = require('express'),
     app     = express(),
-    morgan  = require('morgan');
+    morgan  = require('morgan'),
+    url     = require('url');
     
 Object.assign=require('object-assign')
 
@@ -316,6 +317,20 @@ app.get('/slate/:key/:senderKey?', function(req, res) {
     res.render('slate.html', {  });
   }
 });
+
+app.put('/slate/put95113/:key/:senderKey?', function(req, res) {
+  // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
+  // How about including email and tracking attempts?
+  let slates = db.collection('slates');
+  slates.insert({
+    ip: req.ip, 
+    date: Date.now(), 
+    key: req.params.key, 
+    message: 'Hi.', 
+    senderKey: req.params.senderKey
+  });
+  res.send({"status": "processed"});
+})
 
 // error handling
 app.use(function(err, req, res, next){
