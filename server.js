@@ -133,7 +133,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-app.get('/email-box95050', function (req, res) {
+function mail(to, from, subject, text, html) {
   'use strict';
   const nodemailer = require('nodemailer');
 
@@ -145,22 +145,31 @@ app.get('/email-box95050', function (req, res) {
 
       // create reusable transporter object using the default SMTP transport
       let transporter = nodemailer.createTransport({
-          host: 'in-v3.mailjet.com',
-          port: 465,
-          secure: true, // true for 465, false for other ports
+//          host: 'in-v3.mailjet.com',
+          host: 'smtp-relay.sendinblue.com',
+          port: 587,
+          secure: false, // true for 465, false for other ports
           auth: {
-              user: 'dc455a1cc7b71b0231476013ce7aadee',
-              pass: '01251cd7d61036c4d1ef4bfd64ea3343'
+//          Mailjet
+//              user: 'dc455a1cc7b71b0231476013ce7aadee',
+//              pass: '01251cd7d61036c4d1ef4bfd64ea3343',
+              user: 'andrew95051@outlook.com',
+              pass: 'YO8Q9CgTmIrMGawx'
           }
       });
 
       // send mail with defined transport object // 👻
       let info = await transporter.sendMail({
-          from: '"Andrew Sh" <andrew95051@outlook.com>', // sender address
-          to: 'andrew2004@gmail.com', // list of receivers
-          subject: 'Hello ✔', // Subject line
-          text: 'Hello world?', // plain text body
-          html: '<b>Hello world?</b>' // html body
+//          from: '"Andrew Sh" <andrew95051@outlook.com>', // sender address
+//          to: 'ashaw85@hotmail.com', // list of receivers, ashaw85@hotmail.com rejects Mailjet
+//          subject: 'Hello ✔', // Subject line
+//          text: 'Hello world?', // plain text body
+//          html: '<b>Hello world?</b>' // html body
+          from: from, // sender address
+          to: to, // list of receivers, ashaw85@hotmail.com rejects Mailjet
+          subject: subject, // Subject line
+          text: text, // plain text body
+          html: html // html body
       });
 
       console.log('Message sent: %s', info.messageId);
@@ -169,20 +178,37 @@ app.get('/email-box95050', function (req, res) {
       // Preview only available when sending through an Ethereal account
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      // res.send('{"status":"processed"}');
   }
 
   main().catch(console.error);
+}
+
+app.get('/email-95050', function (req, res) {
+  mail('ashaw85@hotmail.com', 'andrew95050@outlook.com', '2019-10-24 14:50 test', 'Hello');
+});
+
+app.get('/email-slate/:fromEmail', function(req, res) {
+  // Plan to have user request, not directly to putxx, generate and email key with user email
+  // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
+  // How about including email and tracking attempts?
   
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    
-  } else {
-    
-  }
+  let slates = db.collection('slates');
+  let key = req.params.fromEmail + '-' + parseInt(Math.random() * 1000);
+  let senderKey = parseInt(Math.random() * 1000);
+  slates.insert({
+    ip: req.ip, 
+    date: Date.now(), 
+    key: key, 
+    message: 'Hi.', 
+    senderKey: senderKey
+  });
+  mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
+      `To see your slate, copy and paste ${req.rawHeaders[1]}/react/slate/${key}/${senderKey} into your browser's address field`,
+      `To see your slate, click or copy and paste <a href="${req.rawHeaders[1]}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
+      );  // /react/slate/123/95050/
+
+  res.send({"status": "processed"});
 });
 
 app.post('/slate/post/:key/:senderKey?', function(req, res) {
@@ -282,9 +308,10 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
               {$set: {viewedTime: Date.now()}}
               );
         }
+        debugger;
         if (data != undefined &&
             data.length > 0 && data[0].hasOwnProperty('senderKey')) {
-              if (req.params.senderKey !== undefined && req.params.senderKey !== data[0].senderKey) {
+              if (req.params.senderKey !== undefined && req.params.senderKey != data[0].senderKey) {
                 updateViewedTime();
               }
               delete data[0].senderKey;
@@ -319,6 +346,7 @@ app.get('/slate/:key/:senderKey?', function(req, res) {
 });
 
 app.put('/slate/put95113/:key/:senderKey?', function(req, res) {
+//Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
   let slates = db.collection('slates');
