@@ -192,7 +192,11 @@ app.get('/email-slate/:fromEmail', function(req, res) {
   // Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
-  
+  if (!/(.*)@(.+)\.(.+)/.test(req.params.fromEmail)) {
+    res.send({"status": "malformed email"});
+    return;
+  }
+  console.log('email format ok');
   let slates = db.collection('slates');
   let cursor = slates.find({"fromEmail": req.params.fromEmail});
   async function checkEmailDuplication() {
