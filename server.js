@@ -215,7 +215,7 @@ app.get('/email-slate/:fromEmail', function(req, res) {
       mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
           `To see your slate, copy and paste ${req.rawHeaders[1]}/react/slate/${key}/${senderKey} into your browser's address field`,
           `To see your slate, click or copy and paste <a href="${req.rawHeaders[1]}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
-          );  // /react/slate/123/95050/
+          );
 
       res.send({"status": "processed"});
     }
@@ -279,8 +279,8 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
     },
     (err)=>{
       console.log('err:'+JSON.stringify(err));
-      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'ashaw85@hotmail.com', 
-        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: '95050'});
+      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'demo@hotmail.com', 
+        fromEmail: 'demo@outlook.com', message: 'Hi.', senderKey: '321'});
     });
 
     let checkStarterSlateExists = new Promise((resolve, reject) => {
@@ -323,10 +323,12 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
               {$set: {viewedTime: Date.now()}}
               );
         }
-        debugger;
         if (data != undefined &&
             data.length > 0 && data[0].hasOwnProperty('senderKey')) {
-              if (req.params.senderKey !== undefined && req.params.senderKey != data[0].senderKey) {
+              if (req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey) {
+                // do not updateViewedTime();
+              }
+              else {
                 updateViewedTime();
               }
               delete data[0].senderKey;
