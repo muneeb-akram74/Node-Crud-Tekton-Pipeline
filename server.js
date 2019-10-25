@@ -194,21 +194,32 @@ app.get('/email-slate/:fromEmail', function(req, res) {
   // How about including email and tracking attempts?
   
   let slates = db.collection('slates');
-  let key = req.params.fromEmail + '-' + parseInt(Math.random() * 1000);
-  let senderKey = parseInt(Math.random() * 1000);
-  slates.insert({
-    ip: req.ip, 
-    date: Date.now(), 
-    key: key, 
-    message: 'Hi.', 
-    senderKey: senderKey
-  });
-  mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
-      `To see your slate, copy and paste ${req.rawHeaders[1]}/react/slate/${key}/${senderKey} into your browser's address field`,
-      `To see your slate, click or copy and paste <a href="${req.rawHeaders[1]}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
-      );  // /react/slate/123/95050/
+  let cursor = slates.find({"fromEmail": req.params.fromEmail});
+  async function checkEmailDuplication() {
+    emailArray = await cursor.toArray();
+    if(emailArray.length === 0) {
+      let key = req.params.fromEmail + '-' + parseInt(Math.random() * 1000);
+      let senderKey = parseInt(Math.random() * 1000);
+      slates.insert({
+        ip: req.ip, 
+        date: Date.now(), 
+        fromEmail: req.params.fromEmail,
+        key: key, 
+        message: 'Hi.', 
+        senderKey: senderKey
+      });
+      mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
+          `To see your slate, copy and paste ${req.rawHeaders[1]}/react/slate/${key}/${senderKey} into your browser's address field`,
+          `To see your slate, click or copy and paste <a href="${req.rawHeaders[1]}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
+          );  // /react/slate/123/95050/
 
-  res.send({"status": "processed"});
+      res.send({"status": "processed"});
+    }
+    else {
+      res.send({"status": "duplicate, so not added"});
+    }
+  }
+  checkEmailDuplication();
 });
 
 app.post('/slate/post/:key/:senderKey?', function(req, res) {
