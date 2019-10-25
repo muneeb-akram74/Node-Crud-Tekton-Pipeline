@@ -213,8 +213,8 @@ app.get('/email-slate/:fromEmail', function(req, res) {
         senderKey: senderKey
       });
       mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
-          `To see your slate, copy and paste ${req.rawHeaders[1]}/react/slate/${key}/${senderKey} into your browser's address field`,
-          `To see your slate, click or copy and paste <a href="${req.rawHeaders[1]}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
+          `To see your slate, copy and paste ${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field`,
+          `To see your slate, click or copy and paste <a href="${req.headers.host}/react/slate/${key}/${senderKey}">${req.rawHeaders[1]}/react/slate/${key}/${senderKey}</a> into your browser's address field`
           );
 
       res.send({"status": "processed"});
