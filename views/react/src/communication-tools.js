@@ -30,6 +30,9 @@ class CommunicationTools extends React.Component {
     componentDidMount() {
       async function main() {
         let response;
+        this.setState({
+          loading: true
+        })
         if (location.href.match(/slate\/(.*)\/(.*)/) !== null) {
           response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
               '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]);
@@ -41,13 +44,19 @@ class CommunicationTools extends React.Component {
         const getData = await response.json();
         if (getData.length > 0) {
           this.setState({
+            loading: false,
             message: getData[0].message,
             messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
                 'Read by recipient.' : 'Not read by recipient.'
           });
         }
-        ReactDOM.render(<Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} />, document.getElementById('slateForm'));
+        if (this.state.loading) {
+          ReactDOM.render(<div>Loading...</div>, document.getElementById('slateForm'));
+        }
+        else {
+          ReactDOM.render(<Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} />, document.getElementById('slateForm'));
+        }
       }
       main = main.bind(this);
       main();
@@ -93,7 +102,7 @@ class CommunicationTools extends React.Component {
 //                dangerouslySetInnerHTML: {__html: this.state.billFieldLoadingMessage } 
 //            }
 //        );
-        return <div id="billingAmount">
+        return <div id="communicationTools">
         </div>;
     }
 }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import RegisterMe from './register-me'
 
-'user strict';
+'use strict';
 
 export default class Slate extends React.Component {
   constructor(props){
@@ -10,7 +11,7 @@ export default class Slate extends React.Component {
         message2: 'x',
         message: this.props.message,
         hasError: false
-    }
+    };
     this.textAreaRef = React.createRef();
   }
   
@@ -50,7 +51,6 @@ export default class Slate extends React.Component {
       });
       return await response.json();
     }
-    
   }
   
   componentDidMount() {
@@ -60,14 +60,16 @@ export default class Slate extends React.Component {
     })
   }
   
-  onChange() {
-    
-  }
-  
   render() {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
+    let messageForm = <form id="messageForm">
+    <div><label>Message:</label></div>
+    <textarea id="messageTextArea" rows="10" cols="50" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onChange}></textarea>
+    <p id="readStatus">{this.props.readStatus}</p>
+    <input type="submit" onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
+  </form>;
     return <div id="slate">
       <form id="messageForm">
         <div><label>Message:</label></div>
@@ -75,6 +77,8 @@ export default class Slate extends React.Component {
         <p id="readStatus">{this.props.readStatus}</p>
         <input type="submit" onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
+        {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+        
     </div>
   }
 }
