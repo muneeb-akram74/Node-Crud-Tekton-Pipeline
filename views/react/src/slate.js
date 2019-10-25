@@ -77,7 +77,7 @@ export default class Slate extends React.Component {
         <p id="readStatus">{this.props.readStatus}</p>
         <input type="submit" onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
-        {location.href.match(/slate\/(.*?)\//)[1] === 'andrew95050' ? <RegisterMe /> : ''}
+        {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
         
     </div>
   }
