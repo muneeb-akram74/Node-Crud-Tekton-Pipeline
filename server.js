@@ -213,10 +213,15 @@ app.get('/email-slate/:fromEmail', function(req, res) {
         senderKey: senderKey
       });
       mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
-          `To see your slate, copy and paste ${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field`,
-          `To see your slate, click or copy and paste <a href="${req.headers.host}/react/slate/${key}/${senderKey}">${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field`
+          `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
+          `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
           );
 
+      mail('ashaw85@hotmail.com', 'andrew95051@outlook.com', 'Your Slate', 
+          `You have received a slate from ${req.params.fromEmail}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
+          `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
+          );
+      
       res.send({"status": "processed"});
     }
     else {
