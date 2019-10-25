@@ -266,27 +266,29 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
     console.log('senderKey:'+req.params.senderKey);
     let slates = db.collection('slates');
     let criteria, cursor;
-    let checkSampleExists = new Promise((resolve, reject) => {
-      let sampleCursor = slates.find({key: "123"});
+    let checkSampleExists = key => new Promise((resolve, reject) => {
+      let sampleCursor = slates.find({key: key});
       sampleCursor.toArray().then((dataArray)=> {
         if (dataArray.length > 0) {
-          resolve(dataArray);
+          resolve(key);
         }
         else {
-          reject(dataArray);
+          reject(key);
         }
       },
       (err)=>reject('err:'+err));
     });
 
     // Only needed to set up initial sample.
-    checkSampleExists.then((dataArray)=>{
-    },
-    (err)=>{
-      console.log('err:'+JSON.stringify(err));
-      slates.insert({ip: req.ip, date: Date.now(), key: '123', toEmail: 'demo@hotmail.com', 
-        fromEmail: 'demo@outlook.com', message: 'Hi.', senderKey: '321'});
-    });
+    ['123', '124'].forEach(item => {
+      checkSampleExists(item).then((key)=>{
+        },
+        (key)=>{
+          console.log('err:'+JSON.stringify(key));
+          slates.insert({ip: req.ip, date: Date.now(), key: key, toEmail: 'demo@hotmail.com', 
+            fromEmail: 'demo@outlook.com', message: 'Hi.', senderKey: '321'});
+        });
+    })
 
     let checkStarterSlateExists = new Promise((resolve, reject) => {
       let sampleCursor = slates.find({key: "andrew95050"});
