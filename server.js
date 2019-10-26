@@ -257,72 +257,112 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
   }
 });
 
-app.get('/slate/get/:key/:senderKey?', function(req, res) {
+app.get('/slate/get/:key/:senderKey?', async function(req, res) {
   if (!db) {
-    initDb(function(err){});
+    initDb(function(err){
+      console.log(err);
+    });
   }
   if (db) {
-    console.log('at API, key:'+req.params.key);
-    console.log('senderKey:'+req.params.senderKey);
-    let slates = db.collection('slates');
-    let criteria, cursor;
-    let checkSampleExists = key => new Promise((resolve, reject) => {
-      let sampleCursor = slates.find({key: key});
-      sampleCursor.toArray().then((dataArray)=> {
-        if (dataArray.length > 0) {
-          resolve(key);
-        }
-        else {
-          reject(key);
-        }
-      },
-      (err)=>reject('err:'+err));
-    });
-
-    // Only needed to set up initial sample.
-    ['123', '124'].forEach(item => {
-      checkSampleExists(item).then((key)=>{
+    let slates = db.collection('slates'),
+        criteria, 
+        cursor,
+        slatesInserted = {};
+    async function checkKeyExists(key) {
+      let sampleCursor = slates.find({key: key}),
+          dataArray = await sampleCursor.toArray();
+      if (dataArray.length)
+        return true;
+      return false
+    }
+    
+    let demoKeys = ['123', '124'],
+        myStarterKey = 'andrew95050',
+        checkForTheseKeys = [
+          ...demoKeys, 
+          'andrew95050'
+        ],
+        starterSlateCommonProperties = {
+            ip: req.ip, 
+            date: Date.now(), 
+            message: 'Hi.'
+        };
+     
+    /*async*/ function checkedForMinimumKeys() { 
+      };
+      let inserts = [];
+      checkForTheseKeys.forEach((item)=>{
+        checkKeyExists(item).then((exists)=>{
+          if(!exists) {
+            let edits = myStarterKey === item ? 
+                {
+                  toEmail: 'ashaw85@hotmail.com',
+                  fromEmail: 'andrew95051ads@outlook.com',
+                  senderKey: 'outsideCentral'
+                } :
+                {
+                  toEmail: 'demo@hotmail.com', 
+                  fromEmail: 'demo@outlook.com',
+                  senderKey: '321'
+                };
+            edits.key = item;
+            /*result = */ //
+            slates.insert(Object.assign(starterSlateCommonProperties, edits))
+            inserts.push(Object.assign(starterSlateCommonProperties, edits));
+            //console.log('slatesInsert:'+result);
+          }
         },
-        (key)=>{
-          console.log('err:'+JSON.stringify(key));
-          slates.insert({ip: req.ip, date: Date.now(), key: key, toEmail: 'demo@hotmail.com', 
-            fromEmail: 'demo@outlook.com', message: 'Hi.', senderKey: '321'});
+        (err)=>{
+          console.log(err);
+          //return false;
         });
-    })
 
-    let checkStarterSlateExists = new Promise((resolve, reject) => {
-      let sampleCursor = slates.find({key: "andrew95050"});
-      sampleCursor.toArray().then((dataArray)=> {
-        if (dataArray.length > 0) {
-          resolve(dataArray);
-        }
-        else {
-          reject(dataArray);
-        }
-      },
-      (err)=>reject('err:'+err));
-    });
+      //return true;
+      }); // end checkedForMinimumKeys
+      //slates.insert(inserts);
 
-    // Only needed to set up initial sample.
-    checkStarterSlateExists.then((dataArray)=>{
-    },
-    (err)=>{
-      console.log('err:'+JSON.stringify(err));
-      slates.insert({ip: req.ip, date: Date.now(), key: 'andrew95050', toEmail: 'ashaw85@hotmail.com', 
-        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: 'outsideCentral'});
-    });
+      //    // Ensure myself a starter slate
+//    if(!checkKeyExists('andrew95050')) {
+//      slates.insert(Object.assign(starterSlateCommonProperties,
+//          {
+//            key: 'andrew95050',
+//            toEmail: 'ashaw85@hotmail.com',
+//            fromEmail: 'andrew95051ads@outlook.com',
+//            senderKey: 'outsideCentral'
+//          });
+//    }
+//    
+//    let checkStarterSlateExists = new Promise((resolve, reject) => {
+//      let sampleCursor = slates.find({key: "andrew95050"});
+//      sampleCursor.toArray().then((dataArray)=> {
+//        if (dataArray.length > 0) {
+//          resolve(dataArray);
+//        }
+//        else {
+//          reject(dataArray);
+//        }
+//      },
+//      (err)=>reject('err:'+err));
+//    });
+//
+//    // Only needed to set up initial sample.
+//    checkStarterSlateExists.then((dataArray)=>{
+//    },
+//    (err)=>{
+//      console.log('err:'+JSON.stringify(err));
+//      slates.insert({ip: req.ip, date: Date.now(), key: 'andrew95050', toEmail: 'ashaw85@hotmail.com', 
+//        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: 'outsideCentral'});
+//    });
 
+//    checkedForMinimumKeys.then((checked)=>{
+//    },
+//    (err)=>{
+//      console.log(err);
+//    })
     if (typeof req.params.key === "string") {
-      //slates.insert({ip: req.ip, date: Date.now(), key: req.params.key});
-    }
-    else {
-      console.log('Key was object');
-    }
-    keyCriteria = decodeURIComponent(req.params.key);
-    criteria = {
-        "key": keyCriteria
-    }
-    if (typeof keyCriteria == 'string') {
+      criteria = {
+          "key": decodeURIComponent(req.params.key)
+      }
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
         let updateViewedTime = () => {
@@ -345,17 +385,14 @@ app.get('/slate/get/:key/:senderKey?', function(req, res) {
         }
 
         res.send(JSON.stringify(data));
-      },
-      ()=>{});
+      });
     }
-//    else {
-//      console.log('criteria was object');
-//      res.render('slate.html', {  });
-//    }
+    else {
+      console.log('Key was not a string, so barred.');
+    }
+
+  
   } // if (db) 
-  else {
-    res.render('slate.html', {  });
-  }
 });
 
 app.get('/slate/:key/:senderKey?', function(req, res) {
