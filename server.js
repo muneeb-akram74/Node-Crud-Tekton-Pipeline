@@ -3,7 +3,9 @@ var express = require('express'),
     app     = express(),
     morgan  = require('morgan'),
     url     = require('url');
-    
+
+var generateKey = require('./generateKey');
+
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
@@ -196,14 +198,13 @@ app.get('/email-slate/:fromEmail', function(req, res) {
     res.send({"status": "malformed email"});
     return;
   }
-  console.log('email format ok');
   let slates = db.collection('slates');
   let cursor = slates.find({"fromEmail": req.params.fromEmail});
   async function checkEmailDuplication() {
     emailArray = await cursor.toArray();
     if(emailArray.length === 0) {
-      let key = req.params.fromEmail + '-' + parseInt(Math.random() * 1000);
-      let senderKey = parseInt(Math.random() * 1000);
+      let key = req.params.fromEmail + '-' + generateKey(15);
+      let senderKey = generateKey(3);
       slates.insert({
         ip: req.ip, 
         date: Date.now(), 
