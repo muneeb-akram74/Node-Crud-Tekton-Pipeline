@@ -266,8 +266,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
   if (db) {
     let slates = db.collection('slates'),
         criteria, 
-        cursor,
-        slatesInserted = {};
+        cursor;
     async function checkKeyExists(key) {
       let sampleCursor = slates.find({key: key}),
           dataArray = await sampleCursor.toArray();
@@ -288,9 +287,6 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
             message: 'Hi.'
         };
      
-    /*async*/ function checkedForMinimumKeys() { 
-      };
-      let inserts = [];
       checkForTheseKeys.forEach((item)=>{
         checkKeyExists(item).then((exists)=>{
           if(!exists) {
@@ -306,59 +302,13 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
                   senderKey: '321'
                 };
             edits.key = item;
-            /*result = */ //
             slates.insert(Object.assign(starterSlateCommonProperties, edits))
-            inserts.push(Object.assign(starterSlateCommonProperties, edits));
-            //console.log('slatesInsert:'+result);
           }
         },
         (err)=>{
           console.log(err);
-          //return false;
         });
-
-      //return true;
       }); // end checkedForMinimumKeys
-      //slates.insert(inserts);
-
-      //    // Ensure myself a starter slate
-//    if(!checkKeyExists('andrew95050')) {
-//      slates.insert(Object.assign(starterSlateCommonProperties,
-//          {
-//            key: 'andrew95050',
-//            toEmail: 'ashaw85@hotmail.com',
-//            fromEmail: 'andrew95051ads@outlook.com',
-//            senderKey: 'outsideCentral'
-//          });
-//    }
-//    
-//    let checkStarterSlateExists = new Promise((resolve, reject) => {
-//      let sampleCursor = slates.find({key: "andrew95050"});
-//      sampleCursor.toArray().then((dataArray)=> {
-//        if (dataArray.length > 0) {
-//          resolve(dataArray);
-//        }
-//        else {
-//          reject(dataArray);
-//        }
-//      },
-//      (err)=>reject('err:'+err));
-//    });
-//
-//    // Only needed to set up initial sample.
-//    checkStarterSlateExists.then((dataArray)=>{
-//    },
-//    (err)=>{
-//      console.log('err:'+JSON.stringify(err));
-//      slates.insert({ip: req.ip, date: Date.now(), key: 'andrew95050', toEmail: 'ashaw85@hotmail.com', 
-//        fromEmail: 'andrew95051ads@outlook.com', message: 'Hi.', senderKey: 'outsideCentral'});
-//    });
-
-//    checkedForMinimumKeys.then((checked)=>{
-//    },
-//    (err)=>{
-//      console.log(err);
-//    })
     if (typeof req.params.key === "string") {
       criteria = {
           "key": decodeURIComponent(req.params.key)
@@ -390,8 +340,6 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
     else {
       console.log('Key was not a string, so barred.');
     }
-
-  
   } // if (db) 
 });
 
