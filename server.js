@@ -1,4 +1,5 @@
 //  OpenShift sample Node application
+const assert = require('assert');
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan'),
@@ -68,26 +69,36 @@ var initDb = function(callback) {
 
   var mongodb = require('mongodb');
   if (mongodb == null) return;
+  const MongoClient = require('mongodb').MongoClient;
 
   //mongodb.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, conn) { //, { useUnifiedTopology: true }
-  mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true }, (err, client) => {
-    const db = client.db();
+  //MongoClient.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+  const client = new MongoClient(mongoURL, { useUnifiedTopology: true });
+  client.connect(function(err) {
+      const db = client.db('sampledb');
+  
+      if (err) {
+        callback(err);
+        return;
+      }
+  
+      //db = conn;
+      console.log('db.databaseName:'+db.databaseName);
+      dbDetails.databaseName = db.databaseName;
+      dbDetails.url = mongoURLLabel;
+      dbDetails.type = 'MongoDB';
+  
+      console.log('Connected to MongoDB at: %s', mongoURL);
+      debugger;
 
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    //db = conn;
-    console.log('db.databaseName:'+db.databaseName);
-    dbDetails.databaseName = db.databaseName;
-    dbDetails.url = mongoURLLabel;
-    dbDetails.type = 'MongoDB';
-
-    console.log('Connected to MongoDB at: %s', mongoURL);
-    
-    client.close();
+//      db.counts.count(function(err, count ){
+//        console.log('count');
+//        res.send('{ pageCount: ' + count + '}');
+//      });
+     
+      //client.close();
   });
+  //});
 };
 
 app.get('/', function (req, res) {
@@ -133,7 +144,7 @@ app.get('/pagecount', function (req, res) {
   if (db) {
     //db.collection('counts').count(function(err, count ){
     db.counts.count(function(err, count ){
-      console.log('');
+      console.log('count');
       res.send('{ pageCount: ' + count + '}');
     });
   } else {
