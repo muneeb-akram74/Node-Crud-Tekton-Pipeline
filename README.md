@@ -251,3 +251,11 @@ This repository is compatible with Node.js 4 and higher, excluding any alpha or 
 ### License
 
 This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).
+
+
+~/.bash_profile:
+#This only worked with Node mongodb v2 driver:
+#export MONGO_URL="mongodb://127.0.0.1:27017/sampledb?compressors=disabled&gssapiServiceName=mongodb"
+export MONGO_URL="mongodb://127.0.0.1:27017"
+#export MONGO_URL="mongodb+srv://<youruser>:<yourpassword>@cluster0-zuvim.mongodb.net/sampledb?retryWrites=true&w=majority"
+

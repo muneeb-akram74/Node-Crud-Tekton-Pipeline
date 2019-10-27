@@ -71,11 +71,17 @@ var initDb = function(callback) {
   if (mongodb == null) return;
   const MongoClient = require('mongodb').MongoClient;
 
+  const dbName = 'sampledb';
+
   //mongodb.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, conn) { //, { useUnifiedTopology: true }
   //MongoClient.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-  const client = new MongoClient(mongoURL, { useUnifiedTopology: true });
+  const client = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }); //, { useUnifiedTopology: true }
+  // only works with MongoDB Atlas:
+  //const client = new MongoClient(mongoURL, { useUnifiedTopology: true }); //, { useUnifiedTopology: true }
   client.connect(function(err) {
-      const db = client.db('sampledb');
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+    const db = client.db(dbName);
   
       if (err) {
         callback(err);
@@ -89,13 +95,14 @@ var initDb = function(callback) {
       dbDetails.type = 'MongoDB';
   
       console.log('Connected to MongoDB at: %s', mongoURL);
-      debugger;
 
+      db.collection('slates').countDocuments(function(err, count ){
 //      db.counts.count(function(err, count ){
-//        console.log('count');
-//        res.send('{ pageCount: ' + count + '}');
-//      });
+          console.log('{ pageCount: ' + count + ' }');
+//    res.send('{ pageCount: ' + count + ' }');
+      });
      
+      debugger;
       //client.close();
   });
   //});
