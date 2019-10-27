@@ -69,18 +69,24 @@ var initDb = function(callback) {
   var mongodb = require('mongodb');
   if (mongodb == null) return;
 
-  mongodb.connect(mongoURL, function(err, conn) {
+  //mongodb.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, conn) { //, { useUnifiedTopology: true }
+  mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true }, (err, client) => {
+    const db = client.db();
+
     if (err) {
       callback(err);
       return;
     }
 
-    db = conn;
+    //db = conn;
+    console.log('db.databaseName:'+db.databaseName);
     dbDetails.databaseName = db.databaseName;
     dbDetails.url = mongoURLLabel;
     dbDetails.type = 'MongoDB';
 
     console.log('Connected to MongoDB at: %s', mongoURL);
+    
+    client.close();
   });
 };
 
