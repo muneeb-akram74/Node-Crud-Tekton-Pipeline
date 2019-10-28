@@ -10,9 +10,11 @@ export default class Slate extends React.Component {
     this.state = {
         message2: 'x',
         message: this.props.message,
+        messageSubmitButtonText: 'Submit message',
         hasError: false
     };
     this.textAreaRef = React.createRef();
+    this.handleClick = this.handleClick.bind(this);
   }
   
   static getDerivedStateFromError(error) {
@@ -25,19 +27,10 @@ export default class Slate extends React.Component {
   
   handleClick(e) {
     e.preventDefault(0);
-    try {
-      async function updateMessage() {
-        const data = await postData('/slate/post/'+location.href.match(/slate\/(.*)/)[1],
-          { message: document.getElementById('messageTextArea').value } );
-      }
-      updateMessage();
-    }
-    catch (error) {
-      console.log(error);
-    }
     
-    async function postData(url = '', data = {}) {
-      const response = await fetch(url, {
+    let postData = async function (url = '', data = {}) {
+      this.setState({ messageSubmitButtonText: 'Submitting'});
+      const firstData = await fetch(url, {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -49,7 +42,25 @@ export default class Slate extends React.Component {
         referrer: 'no-referrer',
         body: JSON.stringify(data)
       });
-      return await response.json();
+      let response = await firstData.json();
+      if(response.status === 'processed') {
+        this.setState({ messageSubmitButtonText: 'Submitted'});
+        setTimeout(()=>{
+          this.setState({ messageSubmitButtonText: 'Submit message'});
+        }, 3000);
+      } 
+      return;
+    }
+    postData = postData.bind(this);
+    try {
+      async function updateMessage() {
+        const data = await postData('/slate/post/'+location.href.match(/slate\/(.*)/)[1],
+          { message: document.getElementById('messageTextArea').value } );
+      }
+      updateMessage();
+    }
+    catch (error) {
+      console.log(error);
     }
   }
   
@@ -75,7 +86,7 @@ export default class Slate extends React.Component {
         <div><label>Message:</label></div>
         <textarea id="messageTextArea" rows="10" cols="50" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onChange}></textarea>
         <p id="readStatus">{this.props.readStatus}</p>
-        <input type="submit" onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
+        <input type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
         {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
         
