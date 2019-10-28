@@ -31,7 +31,7 @@ export default class RegisterMe extends React.Component {
 	}
 	render() {
 		return <form>
-			<p>Looks good, please email me a recallable Slate to message the issuer:
+			<p>Looks good, please email me a recallable Slate to message Andrew:
 			  <label></label>
 			</p>
 			<div>
