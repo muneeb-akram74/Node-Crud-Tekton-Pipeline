@@ -16,7 +16,6 @@ app.use(express.json());
 app.use('/react/slate/', express.static('views/react'));
 //blocks main.js from loading if declared early:
 app.use('/react/slate/:key?', express.static('views/react'));
-//app.use('/react/slate/:key(\d+)', express.static('views/react')); // /user/:userId(\d+)
 //works with /123/0
 app.use('/react/slate/:key?/:senderkey?', express.static('views/react'));
 
@@ -81,7 +80,7 @@ var initDb = function(callback) {
   client.connect(function(err) {
     assert.equal(null, err);
     console.log("Connected successfully to server");
-    const db = client.db(dbName);
+    db = client.db(dbName);
   
       if (err) {
         callback(err);
