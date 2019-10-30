@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import UserAndId from './billing'
 import Slate from './slate'
+import ErrorBoundary from './error-boundary'
 
 'use strict';
 
@@ -18,7 +19,7 @@ class CommunicationTools extends React.Component {
     }
     
     static getDerivedStateFromError(error) {
-      console.log('getDerivedState');
+      console.log('getDerivedState:'+error);
       return { hasError: true };
     }
 
@@ -29,19 +30,45 @@ class CommunicationTools extends React.Component {
     
     componentDidMount() {
       async function main() {
-        let response;
+        let response,
+            getData;
         this.setState({
           loading: true
         })
         if (location.href.match(/slate\/(.*)\/(.*)/) !== null) {
-          response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
-              '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]);
+          try {
+            response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
+                '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]);
+              console.log('response.status:'+response.status);
+              if(response.status !== 200) {
+                throw new Error();
+              }
+          }
+          catch(e) {
+            console.log('err');
+            this.setState({
+              hasError: true
+            });
+          }
         }
         else {
-          response = await fetch('../../slate/get/'+location.href.match(/slate\/(.*)/)[1]);
-
+          try {
+            response = await fetch('../../slate/get/'+location.href.match(/slate\/(.*)/)[1]);
+          }
+          catch(err) {
+            throw new Error(err);
+          }
         }
-        const getData = await response.json();
+        try {
+          getData = await response.json();
+        }
+        catch(e) {
+          console.log('err:'+e);
+          getData = {
+              message: 'No data',
+              key: '1'
+          }
+        }
         if (getData.length > 0) {
           this.setState({
             loading: false,
@@ -51,11 +78,15 @@ class CommunicationTools extends React.Component {
                 'Read by recipient.' : 'Not read by recipient.'
           });
         }
-        if (this.state.loading) {
-          ReactDOM.render(<div>Loading...</div>, document.getElementById('slateForm'));
+        if (this.state.hasError) {
+          ReactDOM.render(<div>No Slate.</div>, document.getElementById('slateForm'));
         }
         else {
-          ReactDOM.render(<Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} />, document.getElementById('slateForm'));
+          if (this.state.loading) {
+            ReactDOM.render(<div>Loading...</div>, document.getElementById('slateForm'));
+          }
+          ReactDOM.render(<ErrorBoundary>
+          <Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} /></ErrorBoundary>, document.getElementById('slateForm'));
         }
       }
       main = main.bind(this);
@@ -102,6 +133,8 @@ class CommunicationTools extends React.Component {
 //                dangerouslySetInnerHTML: {__html: this.state.billFieldLoadingMessage } 
 //            }
 //        );
+        else {
+        }
         return <div id="communicationTools">
         </div>;
     }
