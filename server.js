@@ -237,12 +237,12 @@ app.get('/email-slate/:fromEmail', function(req, res) {
         message: 'Hi.', 
         senderKey: senderKey
       });
-      mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your Slate', 
+      mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your slate', 
           `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
           `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
           );
 
-      mail('ashaw85@hotmail.com', 'andrew95051@outlook.com', 'Your Slate', 
+      mail('ashaw85@hotmail.com', 'andrew95051@outlook.com', 'Your slate', 
           `You have received a slate from ${req.params.fromEmail}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
           `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
           );
@@ -279,7 +279,7 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
         if (data != undefined &&
             data.length > 0 && data[0].hasOwnProperty('fromEmail') && 
             data[0].hasOwnProperty('senderKey') && data[0].senderKey.toString() === req.params.senderKey.toString()) {
-          mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the Slate', 
+          mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
               `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key} into your browser's address field.`,
               `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key}">http://${req.headers.host}/react/slate/${req.params.key}</a> into your browser's address field.`
               );
@@ -357,7 +357,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
           slates.updateOne(criteria,
               {$set: {viewedTime: Date.now()}}
               );
-          mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your Slate.', 
+          mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your slate.', 
               `The message was ${data[0].message}  To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].xskey} into your browser's address field.`,
               `The message was ${data[0].message}  To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}">http://${req.headers.host}/react/slate/${data[0].key}</a> into your browser's address field.`
               );
