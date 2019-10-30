@@ -292,7 +292,6 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       console.log('Key was not a string, so barred.');
       res.send('{"status": "not processed"}');
     }
-    
   }
 });
 
@@ -336,8 +335,8 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
                   senderKey: 'outsideCentral'
                 } :
                 {
-                  toEmail: 'demo@hotmail.com', 
-                  fromEmail: 'demo@outlook.com',
+                  toEmail: 'andrew95051ads@outlook.com', 
+                  fromEmail: 'ashaw85@yahoo.com',
                   senderKey: '321'
                 };
             edits.key = item;
