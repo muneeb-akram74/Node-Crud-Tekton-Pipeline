@@ -354,12 +354,14 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
         let updateViewedTime = () => {
+          if(data[0].viewedTime < data[0].updateTime) {
+            mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your slate.', 
+                `The message was ${data[0].message}  To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey} into your browser's address field.`,
+                `The message was ${data[0].message}  To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}">http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}</a> into your browser's address field.`
+                );
+          }
           slates.updateOne(criteria,
               {$set: {viewedTime: Date.now()}}
-              );
-          mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your slate.', 
-              `The message was ${data[0].message}  To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey} into your browser's address field.`,
-              `The message was ${data[0].message}  To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}">http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}</a> into your browser's address field.`
               );
         }
         if (data != undefined &&
