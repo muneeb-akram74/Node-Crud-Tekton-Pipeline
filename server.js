@@ -277,7 +277,8 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       cursor = slates.find({key: req.params.key});
       cursor.toArray().then((data)=>{
         if (data != undefined &&
-            data.length > 0 && data[0].hasOwnProperty('fromEmail')) {
+            data.length > 0 && data[0].hasOwnProperty('fromEmail') && 
+            data[0].hasOwnProperty('senderKey') && data[0].senderKey.toString() === req.params.senderKey.toString()) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the Slate', 
               `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key} into your browser's address field.`,
               `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key}">http://${req.headers.host}/react/slate/${req.params.key}</a> into your browser's address field.`
@@ -361,19 +362,19 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
               `To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].xskey} into your browser's address field.`,
               `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}">http://${req.headers.host}/react/slate/${data[0].key}</a> into your browser's address field.`
               );
-          console.log('mailed to:'+data[0].fromEmail);
-          res.send(JSON.stringify(data));
         }
         if (data != undefined &&
             data.length > 0 && data[0].hasOwnProperty('senderKey')) {
               if (req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey) {
                 // do not updateViewedTime();
-                res.send(JSON.stringify(data));
               }
               else {
                 updateViewedTime();
               }
               delete data[0].senderKey;
+              delete data[0].toEmail;
+              delete data[0].fromEmail;
+              res.send(JSON.stringify(data));
         }
         else {
           updateViewedTime();
