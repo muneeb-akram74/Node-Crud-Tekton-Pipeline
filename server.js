@@ -232,6 +232,7 @@ app.get('/email-slate/:fromEmail', function(req, res) {
         ip: req.ip, 
         date: Date.now(), 
         fromEmail: req.params.fromEmail,
+        toEmail: 'ashaw85@hotmail.com',
         key: key, 
         message: 'Hi.', 
         senderKey: senderKey
@@ -269,15 +270,28 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       message=req.body.message;
     }
     if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
-      slates.update({key: req.params.key},
+      slates.updateOne({key: req.params.key},
           {$set: {message: message,
             updateTime: Date.now()}}
       );
+      cursor = slates.find({key: req.params.key});
+      cursor.toArray().then((data)=>{
+        if (data != undefined &&
+            data.length > 0 && data[0].hasOwnProperty('fromEmail')) {
+          mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the Slate', 
+              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key} into your browser's address field.`,
+              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key}">http://${req.headers.host}/react/slate/${req.params.key}</a> into your browser's address field.`
+              );
+          
+        }
+      });
       res.send('{"status": "processed"}');
     }
     else {
+      console.log('Key was not a string, so barred.');
       res.send('{"status": "not processed"}');
     }
+    
   }
 });
 
@@ -340,14 +354,21 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
         let updateViewedTime = () => {
-          slates.update(criteria,
+          slates.updateOne(criteria,
               {$set: {viewedTime: Date.now()}}
               );
+          mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your Slate with message ' + data[0].message, 
+              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].xskey} into your browser's address field.`,
+              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}">http://${req.headers.host}/react/slate/${data[0].key}</a> into your browser's address field.`
+              );
+          console.log('mailed to:'+data[0].fromEmail);
+          res.send(JSON.stringify(data));
         }
         if (data != undefined &&
             data.length > 0 && data[0].hasOwnProperty('senderKey')) {
               if (req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey) {
                 // do not updateViewedTime();
+                res.send(JSON.stringify(data));
               }
               else {
                 updateViewedTime();
@@ -357,8 +378,9 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
         else {
           updateViewedTime();
         }
-
-        res.send(JSON.stringify(data));
+      },
+      (err)=>{
+        console.log('err:'+err);
       });
     }
     else {
