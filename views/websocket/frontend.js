@@ -6,10 +6,13 @@ $(function () {
 
   connection.onopen = function () {
     // connection is opened and ready to use
+    console.log('open');
+    connection.send('t');
   };
 
   connection.onerror = function (error) {
     // an error occurred when sending/receiving data
+    console.log('error:'+error);
   };
 
   connection.onmessage = function (message) {
@@ -17,6 +20,7 @@ $(function () {
     // from server is json)
     try {
       var json = JSON.parse(message.data);
+      console.log('data:'+message.data);
     } catch (e) {
       console.log('This doesn\'t look like a valid JSON: ',
           message.data);
@@ -24,4 +28,5 @@ $(function () {
     }
     // handle incoming message
   };
+  
 });

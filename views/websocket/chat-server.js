@@ -6,7 +6,7 @@ var server = http.createServer(function(request, response) {
   // server we don't have to implement anything.
 });
 server.listen(1337, function() { });
-
+console.log('chat');
 // create the server
 wsServer = new WebSocketServer({
   httpServer: server
@@ -21,10 +21,14 @@ wsServer.on('request', function(request) {
   connection.on('message', function(message) {
     if (message.type === 'utf8') {
       // process WebSocket message
+      console.log('received message:'+JSON.stringify(message));
+      connection.sendUTF(
+          JSON.stringify({ message : "Thanks."}));
     }
   });
 
   connection.on('close', function(connection) {
     // close user connection
+    console.log('close');
   });
 });
