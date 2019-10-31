@@ -8,7 +8,6 @@ export default class Slate extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-        message2: 'x',
         message: this.props.message,
         messageDirty: false,
         messageSubmitButtonText: 'Submit message',
