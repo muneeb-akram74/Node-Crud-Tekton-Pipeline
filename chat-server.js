@@ -54,51 +54,64 @@ module.exports = ()=>{
     // accept connection - you should check 'request.origin' to
     // make sure that client is connecting from your website
     // (http://en.wikipedia.org/wiki/Same_origin_policy)
+
+    let isWhitelisted = false;
+    ['slate-central', 'localhost'].forEach((member)=>{
+      if(request.origin.indexOf(member) > -1) {
+        isWhitelisted = true;
+      };
+    });
     var connection = request.accept(null, request.origin); 
     // we need to know client index to remove them on 'close' event
-    var index = clients.push(connection) - 1;
-    var userName = false;
-    var userColor = false;
-    console.log((new Date()) + ' Connection accepted.');
-    // send back chat history
-    if (history.length > 0) {
+    if (!isWhitelisted) {
       connection.sendUTF(
-          JSON.stringify({ type: 'history', data: history} ));
+          JSON.stringify({ message : "Please use from same origin or approved host."}));
     }
-    // user sent some message
-    connection.on('message', function(message) {
-      if (message.type === 'utf8') { // accept only text
-      // first message sent by user is their name
-       if (userName === false) {
-          // remember user name
-          userName = htmlEntities(message.utf8Data);
-          // get random color and send it back to the user
-          userColor = colors.shift();
-          connection.sendUTF(
-              JSON.stringify({ type:'color', data: userColor }));
-          console.log((new Date()) + ' User is known as: ' + userName
-                      + ' with ' + userColor + ' color.');
-        } else { // log and broadcast the message
-          console.log((new Date()) + ' Received Message from '
-                      + userName + ': ' + message.utf8Data);
-          
-          // we want to keep history of all sent messages
-          var obj = {
-            time: (new Date()).getTime(),
-            text: htmlEntities(message.utf8Data),
-            author: userName,
-            color: userColor
-          };
-          history.push(obj);
-          history = history.slice(-100);
-          // broadcast message to all connected clients
-          var json = JSON.stringify({ type:'message', data: obj });
-          for (var i=0; i < clients.length; i++) {
-            clients[i].sendUTF(json);
+    else {
+      var index = clients.push(connection) - 1;
+      var userName = false;
+      var userColor = false;
+      console.log((new Date()) + ' Connection accepted.');
+      // send back chat history
+      if (history.length > 0) {
+        connection.sendUTF(
+            JSON.stringify({ type: 'history', data: history} ));
+      }
+      // user sent some message
+      connection.on('message', function(message) {
+        if (message.type === 'utf8') { // accept only text
+        // first message sent by user is their name
+         if (userName === false) {
+            // remember user name
+            userName = htmlEntities(message.utf8Data);
+            // get random color and send it back to the user
+            userColor = colors.shift();
+            connection.sendUTF(
+                JSON.stringify({ type:'color', data: userColor }));
+            console.log((new Date()) + ' User is known as: ' + userName
+                        + ' with ' + userColor + ' color.');
+          } else { // log and broadcast the message
+            console.log((new Date()) + ' Received Message from '
+                        + userName + ': ' + message.utf8Data);
+            
+            // we want to keep history of all sent messages
+            var obj = {
+              time: (new Date()).getTime(),
+              text: htmlEntities(message.utf8Data),
+              author: userName,
+              color: userColor
+            };
+            history.push(obj);
+            history = history.slice(-100);
+            // broadcast message to all connected clients
+            var json = JSON.stringify({ type:'message', data: obj });
+            for (var i=0; i < clients.length; i++) {
+              clients[i].sendUTF(json);
+            }
           }
         }
-      }
-    });
+      });
+    }
     // user disconnected
     connection.on('close', function(connection) {
       if (userName !== false && userColor !== false) {
