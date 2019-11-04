@@ -46,6 +46,15 @@ module.exports = ()=>{
     // http://tools.ietf.org/html/rfc6455#page-6
     httpServer: server
   });
+  
+  let quizDataOriginal = {
+      "How many branches of government does the U.S. have?": "3",
+      "Santa Clara is in southern California, T or F?": "F",
+      "At a four-way intersection when the traffic light does not work, is it a 4-way stop? Enter T or F.": "T"
+  };
+  let quizData = Object.assign({}, quizDataOriginal);
+  let quizSubjectFirstEntry;
+  let questionCorrectness = '';
   // This callback function is called every time someone
   // tries to connect to the WebSocket server
   wsServer.on('request', function(request) {
@@ -71,6 +80,8 @@ module.exports = ()=>{
       var index = clients.push(connection) - 1;
       var userName = false;
       var userColor = false;
+      let chosenQuestion,
+          chosenQuestions = [];
       console.log((new Date()) + ' Connection accepted.');
       // send back chat history
       if (history.length > 0) {
@@ -79,18 +90,78 @@ module.exports = ()=>{
       }
       // user sent some message
       connection.on('message', function(message) {
+        var quizUsers = ['qm', 'quizme'];
         if (message.type === 'utf8') { // accept only text
         // first message sent by user is their name
-         if (userName === false) {
-            // remember user name
-            userName = htmlEntities(message.utf8Data);
-            // get random color and send it back to the user
-            userColor = colors.shift();
-            connection.sendUTF(
-                JSON.stringify({ type:'color', data: userColor }));
-            console.log((new Date()) + ' User is known as: ' + userName
-                        + ' with ' + userColor + ' color.');
-          } else { // log and broadcast the message
+        function handleQuizUser() {
+          if (!quizSubjectFirstEntry) {
+            var obj = {
+                time: (new Date()).getTime(),
+                text: htmlEntities(message.utf8Data),
+                author: userName,
+                color: userColor
+              };
+            history.push(obj);
+          }
+          else {
+            quizData = Object.assign({}, quizDataOriginal);
+          }
+          var roboObj = {
+              time: (new Date()).getTime(),
+              author: 'RoboQuizAssistant',
+              color: userColor
+          }
+          if (history.length < 1 || quizSubjectFirstEntry || quizUsers.includes(userName) && history.length > 1 && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
+            questionCorrectness = "";
+          }
+          else if (history.length > 0 && message.utf8Data === history.slice(-1)[0].answer) {
+            questionCorrectness = "Correct. ";
+          }
+          else {
+            questionCorrectness = "Incorrect. ";
+          }
+          if (quizUsers.includes(userName)) {
+            // TODO: questionCorrectness
+            if (Object.keys(quizData).length < 1) {
+              roboObj.text = questionCorrectness + 'Thank you for taking the quiz. You finished the questions!';
+              //questionCorrectness = '';
+            }
+            else {
+              chosenQuestion = parseInt(Math.random() * Object.keys(quizData).length);
+              roboObj.question = Object.keys(quizData)[chosenQuestion];
+              roboObj.answer = quizData[roboObj.question];
+              roboObj.text = questionCorrectness + roboObj.question;
+              delete quizData[roboObj.question];
+            }
+          }
+          history.push(roboObj);
+          history = history.slice(-100);
+          // broadcast message to all connected clients
+          if (!quizSubjectFirstEntry && quizUsers.includes(userName)) {
+            var json = JSON.stringify({ type:'message', data: obj });
+            connection.sendUTF(json);
+          }
+          var roboJson = JSON.stringify({ type:'message', data: roboObj });
+          if (quizUsers.includes(userName)) {
+            connection.sendUTF(roboJson);
+          }
+        } // end handleQuizUser
+        if (userName === false) {
+          // remember user name
+          userName = htmlEntities(message.utf8Data);
+          // get random color and send it back to the user
+          quizSubjectFirstEntry = htmlEntities(message.utf8Data) === userName;
+          userColor = colors.shift();
+          connection.sendUTF(
+              JSON.stringify({ type:'color', data: userColor }));
+          console.log((new Date()) + ' User is known as: ' + userName
+                      + ' with ' + userColor + ' color.');
+          if (quizUsers.includes(userName)) {
+            handleQuizUser();
+          }
+        }
+        
+         else { // log and broadcast the message
             console.log((new Date()) + ' Received Message from '
                         + userName + ': ' + message.utf8Data);
             
@@ -98,17 +169,52 @@ module.exports = ()=>{
             var obj = {
               time: (new Date()).getTime(),
               text: htmlEntities(message.utf8Data),
+              answer: htmlEntities(message.answer),
               author: userName,
               color: userColor
             };
+            var roboObj = {
+                time: (new Date()).getTime(),
+                author: 'RoboQuizAssistant',
+                color: userColor
+            }
+            if (history.length < 1 || quizUsers.includes(userName) && history.length > 1 && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
+              questionCorrectness = "";
+            }
+            else if (history.length > 0 && message.utf8Data === history.slice(-1)[0].answer) {
+              questionCorrectness = "Correct. ";
+            }
+            else {
+              questionCorrectness = "Incorrect. ";
+            }
+            if (quizUsers.includes(userName)) {
+              if (Object.keys(quizData).length < 1) {
+                roboObj.text = questionCorrectness + 'Thank you for taking the quiz. You finished the questions!';
+              }
+              else {
+                chosenQuestion = parseInt(Math.random() * Object.keys(quizData).length);
+                roboObj.question = Object.keys(quizData)[chosenQuestion];
+                roboObj.answer = quizData[roboObj.question];
+                roboObj.text = questionCorrectness + roboObj.question;
+                delete quizData[roboObj.question];
+              }
+            }
             history.push(obj);
+            history.push(roboObj);
             history = history.slice(-100);
             // broadcast message to all connected clients
             var json = JSON.stringify({ type:'message', data: obj });
-            for (var i=0; i < clients.length; i++) {
-              clients[i].sendUTF(json);
+            var roboJson = JSON.stringify({ type:'message', data: roboObj });
+            if (quizUsers.includes(userName)) {
+              connection.sendUTF(json);
+              connection.sendUTF(roboJson);
             }
-          }
+            else {
+              for (var i=0; i < clients.length; i++) {
+                clients[i].sendUTF(json);
+              }
+            }
+          } // end // log and broadcast the message
         }
       });
     }
