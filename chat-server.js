@@ -11,7 +11,9 @@ module.exports = ()=>{
    * Global variables
    */
   // latest 100 messages
+  var histories = {};
   var history = [ ];
+  var quizHistory = {};
   // list of currently connected clients (users)
   var clients = [ ];
   /**
@@ -24,6 +26,7 @@ module.exports = ()=>{
   }
   // Array with some colors
   var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
+  //var colors = [ 'red', 'green' ];
   // ... in random order
   colors.sort(function(a,b) { return Math.random() > 0.5; } );
   /**
@@ -52,7 +55,7 @@ module.exports = ()=>{
       "Santa Clara is in southern California, T or F?": "F",
       "At a four-way intersection when the traffic light does not work, is it a 4-way stop? Enter T or F.": "T"
   };
-  let quizData = Object.assign({}, quizDataOriginal);
+  let quizDatas = {};
   let quizSubjectFirstEntry;
   let questionCorrectness = '';
   // This callback function is called every time someone
@@ -83,6 +86,12 @@ module.exports = ()=>{
       let chosenQuestion,
           chosenQuestions = [];
       console.log((new Date()) + ' Connection accepted.');
+//      if (quizUsers.includes(userName)) {
+//        history = quizHistory[request.origin];
+//      }
+      let connectionID = colors.shift() + Date.now();
+      quizDatas[connectionID] = Object.assign({}, quizDataOriginal);
+      history = histories[colors.shift() + Date.now()] = [];
       // send back chat history
       if (history.length > 0) {
         connection.sendUTF(
@@ -102,9 +111,10 @@ module.exports = ()=>{
                 color: userColor
               };
             history.push(obj);
+            //quizHistory[request.origin].push(obj);
           }
           else {
-            quizData = Object.assign({}, quizDataOriginal);
+            quizDatas[connectionID] = Object.assign({}, quizDataOriginal);
           }
           var roboObj = {
               time: (new Date()).getTime(),
@@ -122,16 +132,16 @@ module.exports = ()=>{
           }
           if (quizUsers.includes(userName)) {
             // TODO: questionCorrectness
-            if (Object.keys(quizData).length < 1) {
+            if (Object.keys(quizDatas[connectionID]).length < 1) {
               roboObj.text = questionCorrectness + 'Thank you for taking the quiz. You finished the questions!';
               //questionCorrectness = '';
             }
             else {
-              chosenQuestion = parseInt(Math.random() * Object.keys(quizData).length);
-              roboObj.question = Object.keys(quizData)[chosenQuestion];
-              roboObj.answer = quizData[roboObj.question];
+              chosenQuestion = parseInt(Math.random() * Object.keys(quizDatas[connectionID]).length);
+              roboObj.question = Object.keys(quizDatas[connectionID])[chosenQuestion];
+              roboObj.answer = quizDatas[connectionID][roboObj.question];
               roboObj.text = questionCorrectness + roboObj.question;
-              delete quizData[roboObj.question];
+              delete quizDatas[connectionID][roboObj.question];
             }
           }
           history.push(roboObj);
@@ -178,7 +188,8 @@ module.exports = ()=>{
                 author: 'RoboQuizAssistant',
                 color: userColor
             }
-            if (history.length < 1 || quizUsers.includes(userName) && history.length > 1 && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
+            if (history.length < 1 || quizUsers.includes(userName) && history.length > 1
+                && history.slice(-1)[0].text && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
               questionCorrectness = "";
             }
             else if (history.length > 0 && message.utf8Data === history.slice(-1)[0].answer) {
@@ -188,15 +199,15 @@ module.exports = ()=>{
               questionCorrectness = "Incorrect. ";
             }
             if (quizUsers.includes(userName)) {
-              if (Object.keys(quizData).length < 1) {
+              if (Object.keys(quizDatas[connectionID]).length < 1) {
                 roboObj.text = questionCorrectness + 'Thank you for taking the quiz. You finished the questions!';
               }
               else {
-                chosenQuestion = parseInt(Math.random() * Object.keys(quizData).length);
-                roboObj.question = Object.keys(quizData)[chosenQuestion];
-                roboObj.answer = quizData[roboObj.question];
+                chosenQuestion = parseInt(Math.random() * Object.keys(quizDatas[connectionID]).length);
+                roboObj.question = Object.keys(quizDatas[connectionID])[chosenQuestion];
+                roboObj.answer = quizDatas[connectionID][roboObj.question];
                 roboObj.text = questionCorrectness + roboObj.question;
-                delete quizData[roboObj.question];
+                delete quizDatas[connectionID][roboObj.question];
               }
             }
             history.push(obj);
