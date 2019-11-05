@@ -85,9 +85,10 @@ module.exports = ()=>{
       let chosenQuestion,
           chosenQuestions = [];
       console.log((new Date()) + ' Connection accepted.');
-      let connectionID = colors.shift() + Date.now();
+      let connectionID = Date.now();
       quizDatas[connectionID] = Object.assign({}, quizDataOriginal);
       history = histories[colors.shift() + Date.now()] = [];
+      
       // send back chat history
       if (history.length > 0) {
         connection.sendUTF(
@@ -115,6 +116,9 @@ module.exports = ()=>{
               time: (new Date()).getTime(),
               author: 'RoboQuizAssistant',
               color: userColor
+          }
+          if (message.utf8Data === 't' || message.utf8Data === 'f') {
+            message.utf8Data = message.utf8Data.toUpperCase();
           }
           if (history.length < 1 || quizSubjectFirstEntry || quizUsers.includes(userName) && history.length > 1 && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
             questionCorrectness = "";
@@ -180,6 +184,9 @@ module.exports = ()=>{
                 time: (new Date()).getTime(),
                 author: 'RoboQuizAssistant',
                 color: userColor
+            }
+            if (message.utf8Data === 't' || message.utf8Data === 'f') {
+              message.utf8Data = message.utf8Data.toUpperCase();
             }
             if (history.length < 1 || quizUsers.includes(userName) && history.length > 1
                 && history.slice(-1)[0].text && history.slice(-1)[0].text.indexOf('finished the questions') > -1) {
