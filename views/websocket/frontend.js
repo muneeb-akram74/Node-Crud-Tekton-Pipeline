@@ -26,6 +26,11 @@ $(function () {
     // first we want users to enter their names
     input.removeAttr('disabled');
     status.text('Choose name:');
+    let autoName = "quizme";
+    if (status[0].innerText === 'Choose name:') {
+      connection.send(autoName);
+      myName = autoName;
+    }
   };
   connection.onerror = function (error) {
     // just in there were some problems with connection...
@@ -58,6 +63,7 @@ $(function () {
     else if (json.type === 'message') { // it's a single message
       // let the user write another message
       input.removeAttr('disabled'); 
+      input.focus();
       addMessage(json.data.author, json.data.text,
                  json.data.color, new Date(json.data.time));
 //      addMessage(json.data.message);
