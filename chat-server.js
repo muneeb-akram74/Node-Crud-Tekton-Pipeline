@@ -26,7 +26,6 @@ module.exports = ()=>{
   }
   // Array with some colors
   var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
-  //var colors = [ 'red', 'green' ];
   // ... in random order
   colors.sort(function(a,b) { return Math.random() > 0.5; } );
   /**
@@ -86,9 +85,6 @@ module.exports = ()=>{
       let chosenQuestion,
           chosenQuestions = [];
       console.log((new Date()) + ' Connection accepted.');
-//      if (quizUsers.includes(userName)) {
-//        history = quizHistory[request.origin];
-//      }
       let connectionID = colors.shift() + Date.now();
       quizDatas[connectionID] = Object.assign({}, quizDataOriginal);
       history = histories[colors.shift() + Date.now()] = [];
@@ -111,7 +107,6 @@ module.exports = ()=>{
                 color: userColor
               };
             history.push(obj);
-            //quizHistory[request.origin].push(obj);
           }
           else {
             quizDatas[connectionID] = Object.assign({}, quizDataOriginal);
@@ -131,10 +126,8 @@ module.exports = ()=>{
             questionCorrectness = "Incorrect. ";
           }
           if (quizUsers.includes(userName)) {
-            // TODO: questionCorrectness
             if (Object.keys(quizDatas[connectionID]).length < 1) {
               roboObj.text = questionCorrectness + 'Thank you for taking the quiz. You finished the questions!';
-              //questionCorrectness = '';
             }
             else {
               chosenQuestion = parseInt(Math.random() * Object.keys(quizDatas[connectionID]).length);
