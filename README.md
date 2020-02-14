@@ -2,7 +2,7 @@
 
 <!-- toc -->
 
-- [Node.js sample app on OpenShift!](#nodejs-sample-app-on-openshift)
+- [Node.js sample app on OpenShift!!](#nodejs-sample-app-on-openshift)
   * [OpenShift Origin v3 setup](#openshift-origin-v3-setup)
     + [Running a virtual machine with Vagrant](#running-a-virtual-machine-with-vagrant)
     + [Running a virtual machine managed by minishift](#running-a-virtual-machine-managed-by-minishift)
