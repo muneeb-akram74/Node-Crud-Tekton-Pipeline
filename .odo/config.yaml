@@ -1,0 +1,14 @@
+kind: LocalConfig
+apiversion: odo.openshift.io/v1alpha1
+ComponentSettings:
+  Type: nodejs:10-SCL
+  SourceLocation: ./
+  SourceType: local
+  Ports:
+  - 8080/TCP
+  Application: myapp
+  Project: odo
+  Name: front
+  Url:
+  - Name: front
+    Port: 8080
