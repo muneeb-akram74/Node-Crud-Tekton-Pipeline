@@ -13,7 +13,7 @@ pipeline {
         script {
             openshift.withCluster() {
                 openshift.withProject() {
-                  def builds = openshift.selector("bc", "nodejs-ex-git").related('builds')
+                  def builds = openshift.selector("bc", "nodejs-mongodb-example").related('builds')
                   timeout(5) { 
                     builds.untilEach(1) {
                       return (it.object().status.phase == "Complete")
@@ -30,9 +30,9 @@ pipeline {
         script {
             openshift.withCluster() {
                 openshift.withProject() {
-                  def rm = openshift.selector("dc", "nodejs-ex").rollout().latest()
+                  def rm = openshift.selector("dc", "nodejs-mongodb-example").rollout().latest()
                   timeout(5) { 
-                    openshift.selector("dc", "nodejs-ex").related('pods').untilEach(1) {
+                    openshift.selector("dc", "nodejs-mongodb-example").related('pods').untilEach(1) {
                       return (it.object().status.phase == "Running")
                     }
                   }
@@ -46,7 +46,7 @@ pipeline {
         script {
             openshift.withCluster() {
                 openshift.withProject() {
-                  openshift.tag("nodejs-ex-git:latest", "nodejs-ex-staging:latest") 
+                  openshift.tag("nodejs-mongodb-example:latest", "nodejs-mongodb-example:latest") 
                 }
             }
         }
