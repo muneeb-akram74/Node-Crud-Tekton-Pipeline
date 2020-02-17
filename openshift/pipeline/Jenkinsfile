@@ -24,5 +24,36 @@ pipeline {
         }
       }
     }
+    //Stage deploy
+        stage('deploy') {
+      steps {
+        script {
+            openshift.withCluster() {
+                openshift.withProject() {
+                  def rm = openshift.selector("dc", "nodejs-ex").rollout().latest()
+                  timeout(5) { 
+                    openshift.selector("dc", "nodejs-ex").related('pods').untilEach(1) {
+                      return (it.object().status.phase == "Running")
+                    }
+                  }
+                }
+            }
+        }
+      }
+    }
+    stage('tag') {
+      steps {
+        script {
+            openshift.withCluster() {
+                openshift.withProject() {
+                  openshift.tag("nodejs-ex-git:latest", "nodejs-ex-staging:latest") 
+                }
+            }
+        }
+      }
+    }
+    
+    
+    
   }
 }
