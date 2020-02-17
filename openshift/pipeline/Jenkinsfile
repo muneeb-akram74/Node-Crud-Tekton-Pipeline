@@ -1,6 +1,59 @@
-node('nodejs') {
-  stage 'build'
-  openshiftBuild(buildConfig: 'nodejs-ex', showBuildLogs: 'true')
-  stage 'deploy'
-  openshiftDeploy(deploymentConfig: 'nodejs-ex')
+pipeline {
+  agent {
+    node {
+      label 'nodejs' 
+    }
+  }
+  options {
+    timeout(time: 20, unit: 'MINUTES') 
+  }
+  stages {
+    stage('build') {
+      steps {
+        script {
+            openshift.withCluster() {
+                openshift.withProject() {
+                  def builds = openshift.selector("bc", "nodejs-ex-git").related('builds')
+                  timeout(5) { 
+                    builds.untilEach(1) {
+                      return (it.object().status.phase == "Complete")
+                    }
+                  }
+                }
+            }
+        }
+      }
+    }
+    //Stage deploy
+        stage('deploy') {
+      steps {
+        script {
+            openshift.withCluster() {
+                openshift.withProject() {
+                  def rm = openshift.selector("dc", "nodejs-ex").rollout().latest()
+                  timeout(5) { 
+                    openshift.selector("dc", "nodejs-ex").related('pods').untilEach(1) {
+                      return (it.object().status.phase == "Running")
+                    }
+                  }
+                }
+            }
+        }
+      }
+    }
+    stage('tag') {
+      steps {
+        script {
+            openshift.withCluster() {
+                openshift.withProject() {
+                  openshift.tag("nodejs-ex-git:latest", "nodejs-ex-staging:latest") 
+                }
+            }
+        }
+      }
+    }
+    
+    
+    
+  }
 }
