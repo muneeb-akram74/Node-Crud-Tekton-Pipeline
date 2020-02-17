@@ -57,7 +57,7 @@ var db = null,
 
 var initDb = function(callback) {
   if (mongoURL == null) {
-      console.log("you forgot to configure database");
+      console.log("you forgot to configure database - server side edit");
       return;
   }
 
