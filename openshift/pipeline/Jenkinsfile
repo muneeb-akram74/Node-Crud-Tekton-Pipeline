@@ -29,7 +29,7 @@ pipeline {
         script {
             openshift.withCluster() {
                 openshift.withProject() {
-                  def rm = openshift.selector("deployment", "nodejs-ex-git").rollout().latest()
+                  //def rm = openshift.selector("deployment", "nodejs-ex-git").rollout().latest()
                   timeout(5) { 
                     openshift.selector("deployment", "nodejs-ex-git").related('pods').untilEach(1) {
                       return (it.object().status.phase == "Running")
