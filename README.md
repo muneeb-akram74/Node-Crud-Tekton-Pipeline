@@ -259,3 +259,26 @@ This code is dedicated to the public domain to the maximum extent permitted by a
 export MONGO_URL="mongodb://127.0.0.1:27017"
 #export MONGO_URL="mongodb+srv://<youruser>:<yourpassword>@cluster0-zuvim.mongodb.net/sampledb?retryWrites=true&w=majority"
 
+If using Eclipse Neon Terminal, at command line, need to run 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+to use node or npm.
+
+If using Eclipse > Window > Show View > Other... > Git Repositories, to avoid seeing files deleted status, right click nodejs-ex, show in Git Staging, 
+need to cd /Users/andrewshaw/Documents/workspace/RemoteSystemsTempFiles/nodejs-ex/views/react and mv .git to .xgit for Terminal git status to show any changes in /Users/andrewshaw/Documents/workspace/RemoteSystemsTempFiles/nodejs-ex/views/react from parent folder.
+
+Reverse the above to be able to push React changes to Github.
+
+Start up
+
+1. Start mongodb, i.e.:
+/Users/[youruser]/Downloads/mongodb-macos-x86_64-4.2.0/bin
+sudo ./mongod
+
+2. See Slate locally at 
+http://0.0.0.0:8080/react/slate/123/
+http://127.0.0.1:8080/react/slate/123/
+
+3. To make front end changes and compile on changes, see instructions in
+Documents/workspace/RemoteSystemsTempFiles/nodejs-ex/views/react/README.md
