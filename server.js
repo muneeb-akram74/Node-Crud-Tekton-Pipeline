@@ -214,7 +214,8 @@ app.get('/email-95050', function (req, res) {
   // mail('ashaw85@hotmail.com', 'andrew95050@outlook.com', '2019-10-24 14:50 test', 'Hello');
   var helper = require('sendgrid').mail;
   var from_email = new helper.Email('andrew95051@outlook.com');
-  var to_email = new helper.Email('ashaw85@hotmail.com');
+  // hotmail, outlook.com do not accept
+  var to_email = new helper.Email('andrew2004@gmail.com');
   var subject = 'Hello World from the SendGrid Node.js Library!';
   var content = new helper.Content('text/plain', 'Hello, Email!');
   var mail = new helper.Mail(from_email, subject, to_email, content);
