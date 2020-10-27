@@ -210,29 +210,58 @@ function mail(to, from, subject, text, html) {
   main().catch(console.error);
 }
 
+function mailWithSendGrid(to, subject, text, html) {
+  var sendGridAllowedFromEmail = 'andrew95051@outlook.com';
+  
+  // Heroku-provided
+//  var helper = require('sendgrid').mail;
+//  var from_email = new helper.Email(sendGridAllowedFromEmail);
+//  // hotmail, outlook.com do not accept
+//  var to_email = new helper.Email(to);
+////  var subject = 'Hello World from the SendGrid Node.js Library!';
+//  var content = new helper.Content('text/plain', 'Hello, Email!');
+//  var mail = new helper.Mail(from_email, subject, to_email, content);
+//
+//  var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
+//  var request = sg.emptyRequest({
+//    method: 'POST',
+//    path: '/v3/mail/send',
+//    body: mail.toJSON(),
+//  });
+//
+//  sg.API(request, function(error, response) {
+//    console.log(response.statusCode);
+//    console.log(response.body);
+//    console.log(response.headers);
+//  });
+  
+  // SendGrid provided
+  const sgMail = require('@sendgrid/mail')
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+  const msg = {
+    to: to, // Change to your recipient
+    from: sendGridAllowedFromEmail, // Change to your verified sender
+    subject: subject,
+    text,
+    html,
+  }
+
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log('Email sent')
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+
+  res.send({"status": "processed"});
+}
+
 app.get('/email-95050', function (req, res) {
   // mail('ashaw85@hotmail.com', 'andrew95050@outlook.com', '2019-10-24 14:50 test', 'Hello');
-  var helper = require('sendgrid').mail;
-  var from_email = new helper.Email('andrew95051@outlook.com');
-  // hotmail, outlook.com do not accept
-  var to_email = new helper.Email('andrew2004@gmail.com');
-  var subject = 'Hello World from the SendGrid Node.js Library!';
-  var content = new helper.Content('text/plain', 'Hello, Email!');
-  var mail = new helper.Mail(from_email, subject, to_email, content);
-
-  var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
-  var request = sg.emptyRequest({
-    method: 'POST',
-    path: '/v3/mail/send',
-    body: mail.toJSON(),
-  });
-
-  sg.API(request, function(error, response) {
-    console.log(response.statusCode);
-    console.log(response.body);
-    console.log(response.headers);
-  });
-  res.send({"status": "processed"});
+  mailWithSendGrid('andrew2004@gmail.com', '2020-10-27 11:35 test', 'Hello', '<h3>Hello</h3>');
 });
 
 app.get('/email-slate/:fromEmail', function(req, res) {
