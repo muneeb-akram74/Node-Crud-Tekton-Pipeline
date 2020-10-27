@@ -231,6 +231,7 @@ app.get('/email-95050', function (req, res) {
     console.log(response.body);
     console.log(response.headers);
   });
+  res.send({"status": "processed"});
 });
 
 app.get('/email-slate/:fromEmail', function(req, res) {
