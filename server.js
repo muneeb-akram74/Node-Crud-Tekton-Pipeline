@@ -81,6 +81,7 @@ var initDb = function(callback) {
   client.connect(function(err) {
     assert.equal(null, err);
     console.log("Connected successfully to server");
+    console.log("process.env.SENDGRID_API_KEY:"+process.env.SENDGRID_API_KEY);
     db = client.db(dbName);
   
       if (err) {
@@ -248,7 +249,8 @@ function mailWithSendGrid(to, from, subject, text, html) {
   
   // SendGrid provided
   const sgMail = require('@sendgrid/mail')
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+//  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  sgMail.setApiKey('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')
 
   const msg = {
     to: to, // Change to your recipient
