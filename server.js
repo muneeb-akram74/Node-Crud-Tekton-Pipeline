@@ -160,6 +160,10 @@ app.get('/pagecount', function (req, res) {
 });
 
 function mail(to, from, subject, text, html) {
+  mailWithSendGrid(to, subject, text, html)
+}
+
+function mailWithNodemailer(to, from, subject, text, html) {
   'use strict';
   const nodemailer = require('nodemailer');
 
@@ -261,7 +265,7 @@ function mailWithSendGrid(to, subject, text, html) {
 
 app.get('/email-95050', function (req, res) {
   // mail('ashaw85@hotmail.com', 'andrew95050@outlook.com', '2019-10-24 14:50 test', 'Hello');
-  mailWithSendGrid('andrew2004@gmail.com', '2020-10-27 11:35 test', 'Hello', '<h3>Hello</h3>');
+  mail('andrew2004@gmail.com', '2020-10-27 11:35 test', 'Hello', '<h3>Hello</h3>');
 });
 
 app.get('/email-slate/:fromEmail', function(req, res) {
