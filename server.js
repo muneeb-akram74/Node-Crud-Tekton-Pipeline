@@ -160,7 +160,7 @@ app.get('/pagecount', function (req, res) {
 });
 
 function mail(to, from, subject, text, html) {
-  mailWithSendGrid(to, subject, text, html)
+  mailWithSendGrid(to, from, subject, text, html)
 }
 
 function mailWithNodemailer(to, from, subject, text, html) {
@@ -214,12 +214,19 @@ function mailWithNodemailer(to, from, subject, text, html) {
   main().catch(console.error);
 }
 
-function mailWithSendGrid(to, subject, text, html) {
-  var sendGridAllowedFromEmail = 'andrew95051@outlook.com';
+function mailWithSendGrid(to, from, subject, text, html) {
+  var sendGridAllowedFromEmails = [
+    'andrew95051@outlook.com',
+    'ashaw85@hotmail.com'
+  ];
+  var selectedEmail = sendGridAllowedFromEmails[0];
+  if (sendGridAllowedFromEmails.indexOf(from) > -1) {
+    selectedEmail = from;
+  }
   
   // Heroku-provided
 //  var helper = require('sendgrid').mail;
-//  var from_email = new helper.Email(sendGridAllowedFromEmail);
+//  var from_email = new helper.Email(selectedEmail);
 //  // hotmail, outlook.com do not accept
 //  var to_email = new helper.Email(to);
 ////  var subject = 'Hello World from the SendGrid Node.js Library!';
@@ -245,7 +252,7 @@ function mailWithSendGrid(to, subject, text, html) {
 
   const msg = {
     to: to, // Change to your recipient
-    from: sendGridAllowedFromEmail, // Change to your verified sender
+    from: selectedEmail, // Change to your verified sender
     subject: subject,
     text,
     html,
@@ -265,7 +272,7 @@ function mailWithSendGrid(to, subject, text, html) {
 
 app.get('/email-95050', function (req, res) {
   // mail('ashaw85@hotmail.com', 'andrew95050@outlook.com', '2019-10-24 14:50 test', 'Hello');
-  mail('andrew2004@gmail.com', '2020-10-27 11:35 test', 'Hello', '<h3>Hello</h3>');
+  mail('andrew2004@gmail.com', 'andrew95050@outlook.com', '2020-10-27 11:35 test', 'Hello', '<h3>Hello</h3>');
 });
 
 app.get('/email-slate/:fromEmail', function(req, res) {
