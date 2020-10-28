@@ -275,12 +275,16 @@ Start up
 1. Start mongodb, i.e.:
 /Users/[youruser]/Downloads/mongodb-macos-x86_64-4.2.0/bin
 sudo ./mongod
-
 2. cd [path to nodejs-ex folder]nodejs-ex and run node server.js
-
 3. See Slate locally at 
 http://0.0.0.0:8080/react/slate/123/
 http://127.0.0.1:8080/react/slate/123/
-
 4. To make front end changes and compile on changes, see instructions in
 Documents/workspace/RemoteSystemsTempFiles/nodejs-ex/views/react/README.md
+
+Manually querying database
+
+1. cd /Users/andrewshaw/Downloads/mongodb-macos-x86_64-4.2.0/bin
+2. ./mongo
+3. use db sampledb
+4. db.slates.find({targetKeyname: targetValue}) to print slates
