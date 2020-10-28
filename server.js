@@ -1,9 +1,15 @@
+/*
+TODO: reply slate where recipient now keeps own senderKey, what about old slate? Lock and email
+sender's old message then delete?
+The first sender may want to update it.
+*/
 //  OpenShift sample Node application
 const assert = require('assert');
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan'),
     url     = require('url');
+var prodHost = 'https://slate-central.herokuapp';
 
 var generateKey = require('./generateKey');
 require('./chat-server')();
@@ -81,7 +87,7 @@ var initDb = function(callback) {
   client.connect(function(err) {
     assert.equal(null, err);
     console.log("Connected successfully to server");
-    console.log("process.env.SENDGRID_API_KEY:"+process.env.SENDGRID_API_KEY);
+    //console.log("process.env.SENDGRID_API_KEY:"+process.env.SENDGRID_API_KEY);
     db = client.db(dbName);
   
       if (err) {
@@ -323,6 +329,7 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
   // Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
+  console.log('feature:'+req.query.feature);
   if (
       !/(.*)@(.+)\.(.+)/.test(req.params.fromEmail)
       || !/(.*)@(.+)\.(.+)/.test(req.params.toEmail)
@@ -491,8 +498,8 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
                 updateViewedTime();
               }
               delete data[0].senderKey;
-              delete data[0].toEmail;
-              delete data[0].fromEmail;
+//              delete data[0].toEmail;
+//              delete data[0].fromEmail;
               res.send(JSON.stringify(data));
         }
         else {
