@@ -68,10 +68,19 @@ class CommunicationTools extends React.Component {
               key: '1'
           }
         }
-        if (getData.length > 0) {
+        if (getData.length < 1) {
           this.setState({
             loading: false,
+            hasError: true
+          });
+        }
+        else {
+          this.setState({
+            loading: false,
+            fromEmail: getData[0].fromEmail,
+            toEmail: getData[0].toEmail,
             message: getData[0].message,
+            replyExists: getData[0].replyExists,
             messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
                 'Read by recipient.' : 'Not read by recipient.'
@@ -85,7 +94,7 @@ class CommunicationTools extends React.Component {
             ReactDOM.render(<div>Loading...</div>, document.getElementById('slateForm'));
           }
           ReactDOM.render(<ErrorBoundary>
-          <Slate message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} callback={this.formChild1.bind(this)} /></ErrorBoundary>, document.getElementById('slateForm'));
+          <Slate fromEmail={this.state.fromEmail} toEmail={this.state.toEmail} message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} replyExists={this.state.replyExists} callback={this.formChild1.bind(this)} /></ErrorBoundary>, document.getElementById('slateForm'));
         }
       }
       main = main.bind(this);

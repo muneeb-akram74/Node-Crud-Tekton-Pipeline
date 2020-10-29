@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import RegisterMe from './register-me'
+import Reply from './reply'
 
 'use strict';
 
@@ -101,6 +102,7 @@ export default class Slate extends React.Component {
         <p id="readStatus">{this.props.readStatus}</p>
         <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
+        {location.href.indexOf('feature=reply') > -1 && !this.props.replyExists ? <Reply fromEmail={this.props.toEmail} toEmail={this.props.fromEmail} /> : ''}
         {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
     </div>
   }

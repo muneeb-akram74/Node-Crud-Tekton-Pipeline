@@ -1,7 +1,10 @@
 /*
-TODO: reply slate where recipient now keeps own senderKey, what about old slate? Lock and email
+TODO: what about old slate? Lock and email
 sender's old message then delete?
 The first sender may want to update it.
+Investigate why same Slate was returned.
+TODO: how about only having senderKey, receiverKey
+TODO how about notification of slate created
 */
 //  OpenShift sample Node application
 const assert = require('assert');
@@ -348,6 +351,17 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
     if(emailArray.length === 0) {
       let key = req.params.fromEmail + '-' + generateKey(15);
       let senderKey = generateKey(3);
+      slates.updateOne(
+          {
+            fromEmail: req.params.toEmail,
+            toEmail: req.params.fromEmail
+          },
+          {
+            $set: {
+              replyExists: true
+            }
+          }
+      );
       slates.insert({
         ip: req.ip, 
         date: Date.now(), 
@@ -363,8 +377,8 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
           );
 
       mail(req.params.toEmail, 'andrew95051@outlook.com', 'Your slate', 
-          `You have received a slate from ${req.params.fromEmail}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
-          `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
+          `You have received a slate from ${req.params.fromEmail}. To notify sender of receipt and read your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
+          `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To notify sender of receipt and read your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
           );
       
       res.send({"status": "processed"});
@@ -471,6 +485,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
 //      });
 //    }); // end checkedForMinimumKeys
 //    /* end check for demo and starter keys */
+    let replyExists = false;
       
     if (typeof req.params.key === "string") {
       criteria = {
@@ -478,32 +493,67 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
       }
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
+        let replyFromEmail = '';
+        let replyToEmail = ''
+        if (data.length > 0) {
+          replyFromEmail = data[0].toEmail;
+          replyToEmail = data[0].fromEmail;
+        }
+        let replyCursor = slates.find({
+          "fromEmail": replyFromEmail,
+          "toEmail": replyToEmail
+        });
+        async function checkExistenceReply() {
+          try {
+            replySlates = await replyCursor.toArray();
+            if (replySlates.length > 0) {
+              return true;
+            }
+            return false;
+          }
+          catch {
+            return false;
+          }
+        }
+
         let updateViewedTime = () => {
-          if(data[0].viewedTime < data[0].updateTime) {
+          if(data[0] && data[0].viewedTime < data[0].updateTime) {
             mail(data[0].fromEmail, data[0].toEmail, data[0].toEmail + ' has accessed your slate.', 
                 `The message was ${data[0].message}  To see your slate, copy and paste http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey} into your browser's address field.`,
                 `The message was ${data[0].message}  To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}">http://${req.headers.host}/react/slate/${data[0].key}/${data[0].senderKey}</a> into your browser's address field.`
                 );
           }
-          slates.updateOne(criteria,
+          slates.updateOne(
+              criteria,
               {$set: {viewedTime: Date.now()}}
-              );
+          );
         }
-        if (data != undefined &&
-            data.length > 0 && data[0].hasOwnProperty('senderKey')) {
-              if (req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey) {
-                // do not updateViewedTime();
-              }
-              else {
-                updateViewedTime();
-              }
-              delete data[0].senderKey;
-//              delete data[0].toEmail;
-//              delete data[0].fromEmail;
-              res.send(JSON.stringify(data));
+        if (!(data != undefined &&
+          data.length > 0 && data[0].hasOwnProperty('senderKey'))) {
+          res.send([]);
         }
         else {
-          updateViewedTime();
+          if (req.params.senderKey !== undefined && req.params.senderKey == data[0].senderKey) {
+            // do not updateViewedTime();
+          }
+          else {
+            updateViewedTime();
+          }
+          delete data[0].senderKey;
+//              delete data[0].toEmail;
+//              delete data[0].fromEmail;
+          async function replyExists() {
+            return await checkExistenceReply();
+          }
+          checkExistenceReply().then(replyExists => {
+            try {
+              data[0].replyExists = replyExists;
+              res.send(JSON.stringify(data));
+            }
+            catch {
+              res.send({"result": "error"});
+            }
+          });
         }
       },
       (err)=>{
