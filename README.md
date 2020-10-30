@@ -288,3 +288,5 @@ Manually querying database
 2. ./mongo
 3. use db sampledb
 4. db.slates.find({targetKeyname: targetValue}) to print slates
+
+Toggle feature by db.features.updateOne({"reply":"true"},{$set:{"reply":"false"}})
