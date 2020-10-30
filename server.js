@@ -1,6 +1,6 @@
 /*
 TODO: what about old slate? Lock and email
-sender's old message then delete?
+sender's old message then delete will need more email entitlement.
 The first sender may want to update it.
 Investigate why same Slate was returned.
 TODO: how about only having senderKey, receiverKey
@@ -15,6 +15,13 @@ var express = require('express'),
 var prodHost = 'https://slate-central.herokuapp';
 
 var generateKey = require('./generateKey');
+var sendGridAllowedFromEmails = [
+  'andrew95051@outlook.com',
+  'ashaw85@hotmail.com',
+  'pweqoes@netmail.tk',
+];
+var selectedFromEmail = sendGridAllowedFromEmails[2];
+
 require('./chat-server')();
 Object.assign=require('object-assign')
 
@@ -225,18 +232,13 @@ function mailWithNodemailer(to, from, subject, text, html) {
 }
 
 function mailWithSendGrid(to, from, subject, text, html) {
-  var sendGridAllowedFromEmails = [
-    'andrew95051@outlook.com',
-    'ashaw85@hotmail.com'
-  ];
-  var selectedEmail = sendGridAllowedFromEmails[0];
   if (sendGridAllowedFromEmails.indexOf(from) > -1) {
-    selectedEmail = from;
+    selectedFromEmail = from;
   }
   
   // Heroku-provided
 //  var helper = require('sendgrid').mail;
-//  var from_email = new helper.Email(selectedEmail);
+//  var from_email = new helper.Email(selectedFromEmail);
 //  // hotmail, outlook.com do not accept
 //  var to_email = new helper.Email(to);
 ////  var subject = 'Hello World from the SendGrid Node.js Library!';
@@ -263,7 +265,7 @@ function mailWithSendGrid(to, from, subject, text, html) {
 
   const msg = {
     to: to, // Change to your recipient
-    from: selectedEmail, // Change to your verified sender
+    from: selectedFromEmail, // Change to your verified sender
     subject: subject,
     text,
     html,
@@ -294,7 +296,10 @@ app.get('/email-slate/:fromEmail', function(req, res) {
     return;
   }
   let slates = db.collection('slates');
-  let cursor = slates.find({"fromEmail": req.params.fromEmail});
+  let cursor = slates.find({
+    "fromEmail": req.params.fromEmail,
+    "toEmail": selectedFromEmail
+  });
   async function checkEmailDuplication() {
     emailArray = await cursor.toArray();
     if(emailArray.length === 0) {
@@ -309,12 +314,12 @@ app.get('/email-slate/:fromEmail', function(req, res) {
         message: 'Hi.', 
         senderKey: senderKey
       });
-      mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your slate', 
+      mail(req.params.fromEmail, selectedFromEmail, 'Your slate', 
           `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
           `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
           );
 
-      mail('ashaw85@hotmail.com', 'andrew95051@outlook.com', 'Your slate', 
+      mail(selectedFromEmail, selectedFromEmail, 'Your slate', 
           `You have received a slate from ${req.params.fromEmail}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
           `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
           );
@@ -591,6 +596,13 @@ app.put('/slate/put95113/:key/:senderKey?', function(req, res) {
   });
   res.send({"status": "processed"});
 })
+
+app.get('/features', function(req, res) {
+  let features = db.collection('features');
+  features.find({}).toArray().then(featuresArray => {
+    res.send(featuresArray);
+  });
+});
 
 // error handling
 app.use(function(err, req, res, next){
