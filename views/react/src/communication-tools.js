@@ -31,7 +31,9 @@ class CommunicationTools extends React.Component {
     componentDidMount() {
       async function main() {
         let response,
-            getData;
+            getData,
+            featuresResponse,
+            features;
         this.setState({
           loading: true
         })
@@ -68,6 +70,18 @@ class CommunicationTools extends React.Component {
               key: '1'
           }
         }
+        try {
+          featuresResponse = await fetch('/features');
+        }
+        catch(e) {
+          console.log('err:'+e);
+        }
+        try {
+          features = await featuresResponse.json();
+        }
+        catch(e) {
+          console.log('err:'+e);
+        }
         if (getData.length < 1) {
           this.setState({
             loading: false,
@@ -83,7 +97,8 @@ class CommunicationTools extends React.Component {
             replyExists: getData[0].replyExists,
             messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
-                'Read by recipient.' : 'Not read by recipient.'
+                'Read by recipient.' : 'Not read by recipient.',
+            features: features,
           });
         }
         if (this.state.hasError) {
@@ -93,8 +108,21 @@ class CommunicationTools extends React.Component {
           if (this.state.loading) {
             ReactDOM.render(<div>Loading...</div>, document.getElementById('slateForm'));
           }
-          ReactDOM.render(<ErrorBoundary>
-          <Slate fromEmail={this.state.fromEmail} toEmail={this.state.toEmail} message={this.state.message} messageMaxLength={this.state.messageMaxLength} readStatus={this.state.readStatus} replyExists={this.state.replyExists} callback={this.formChild1.bind(this)} /></ErrorBoundary>, document.getElementById('slateForm'));
+          ReactDOM.render(
+            <ErrorBoundary>
+              <Slate 
+                fromEmail={this.state.fromEmail} 
+                toEmail={this.state.toEmail} 
+                message={this.state.message} 
+                messageMaxLength={this.state.messageMaxLength} 
+                readStatus={this.state.readStatus} 
+                replyExists={this.state.replyExists} 
+                getStateProperty={this.getStateProperty.bind(this)}
+                features={this.state.features}
+              />
+            </ErrorBoundary>, 
+            document.getElementById('slateForm')
+          );
         }
       }
       main = main.bind(this);
@@ -124,10 +152,8 @@ class CommunicationTools extends React.Component {
       ReactDOM.render(<UserAndId user="Joan" userId="134" data={this.state.data}/>, document.getElementById('intro'))
     }
     
-    formChild1(params) {
-      this.setState({
-        data: params
-      })
+    getStateProperty(stateProperty) {
+      return this.state[stateProperty];
     }
 
     render() {
@@ -141,8 +167,6 @@ class CommunicationTools extends React.Component {
 //                dangerouslySetInnerHTML: {__html: this.state.billFieldLoadingMessage } 
 //            }
 //        );
-        else {
-        }
         return <div id="communicationTools">
         </div>;
     }

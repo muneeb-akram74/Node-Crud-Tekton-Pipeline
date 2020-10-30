@@ -92,6 +92,7 @@ export default class Slate extends React.Component {
   }
   
   render() {
+    let replyFeatureOn = this.props.features[0].reply === "true" || location.href.indexOf('feature=reply') > -1 ? true : false;
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
@@ -102,7 +103,7 @@ export default class Slate extends React.Component {
         <p id="readStatus">{this.props.readStatus}</p>
         <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
-        {location.href.indexOf('feature=reply') > -1 && !this.props.replyExists ? <Reply fromEmail={this.props.toEmail} toEmail={this.props.fromEmail} /> : ''}
+        {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
         {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
     </div>
   }
