@@ -22,7 +22,7 @@ export default class Reply extends React.Component {
   handleClick(e) {
     e.preventDefault();
     async function reply() {
-      let firstData = await fetch('/email-slate-to-990/' + this.props.fromEmail + '/' + this.props.toEmail);
+      let firstData = await fetch('/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail'));
       let statusJSON = firstData.json();
       console.log('status:' + JSON.stringify(statusJSON));
     }

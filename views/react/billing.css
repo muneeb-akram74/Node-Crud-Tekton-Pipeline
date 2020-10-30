@@ -23,3 +23,6 @@ button.light,
 span.light {
   color: #555;
 }
+.slate-requestor-email-field {
+  margin-bottom: 1rem;
+}

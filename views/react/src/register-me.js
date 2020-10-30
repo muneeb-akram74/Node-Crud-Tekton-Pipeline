@@ -34,10 +34,10 @@ export default class RegisterMe extends React.Component {
 			<p>Looks good, please email me a recallable Slate to message Andrew:
 			  <label></label>
 			</p>
-			<div>
+			<div className="slate-requestor-email-field">
 			  <input onChange={this.handleChange}/>
 			</div>
-			<div>
+			<div className="submit-slate-request">
 			  <input onClick={(e) => this.handleClick(e)} type="submit" disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true} value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}/>
 			</div>
 		</form>;
