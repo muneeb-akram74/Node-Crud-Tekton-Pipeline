@@ -1,9 +1,11 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
-import UserAndId from './billing'
-import Slate from './slate'
-import ErrorBoundary from './error-boundary'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import UserAndId from './billing';
+import Slate from './slate';
+import ErrorBoundary from './error-boundary';
+import 'bootstrap';
+var $ = require( "jquery" );
 
 'use strict';
 
@@ -173,5 +175,6 @@ class CommunicationTools extends React.Component {
 }
 //ReactDOM.render(React.createElement(CommunicationTools),
 //    document.querySelector('#communication-tools-container'));
+$('#privacyModal').modal('show');
 ReactDOM.render(<CommunicationTools/>,
     document.querySelector('#communication-tools-container'));

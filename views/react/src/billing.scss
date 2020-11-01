@@ -1,0 +1,44 @@
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+
+body {
+    font-family: Arial;
+}
+
+.hide {
+	display: none;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bill-properties {
+    ul {
+        border-color: #0a4386;
+        border-width: 5px 1px 1px;
+        border-style: solid;
+        list-style: none;
+        padding: 1em;
+    }
+}
+
+button.dark,
+span.dark {
+	background-color: #eee;
+}
+
+button.light,
+span.light {
+	color: #555;
+}
+
+.slate-requestor-email-field {
+	margin-bottom: 1rem;
+}
+
+#privacyModal {
+	top: unset;
+	height: unset;
+	bottom: 0;
+}
