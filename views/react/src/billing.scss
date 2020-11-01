@@ -42,15 +42,13 @@ span.light {
 	margin-bottom: 1rem;
 }
 
-
-
 #privacyModal {
 	top: unset;
 	height: unset;
 	bottom: 0;
 }
 
-.privacy-notice + button {
+.privacy-notice + div button {
 	display: none;
 }
 
@@ -60,7 +58,7 @@ span.light {
 	background-color: white;
 	padding-top: 15px;
   padding-bottom: 15px;
-	&.hide + button {
+	&.hide + div button {
 		display: inline-block;
 	}
 }

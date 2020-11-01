@@ -7193,7 +7193,7 @@ span.light {
   height: unset;
   bottom: 0; }
 
-.privacy-notice + button {
+.privacy-notice + div button {
   display: none; }
 
 .privacy-notice {
@@ -7202,7 +7202,7 @@ span.light {
   background-color: white;
   padding-top: 15px;
   padding-bottom: 15px; }
-  .privacy-notice.hide + button {
+  .privacy-notice.hide + div button {
     display: inline-block; }
 
 #messageForm,

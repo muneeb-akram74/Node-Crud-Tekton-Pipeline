@@ -117,15 +117,19 @@ export default class Slate extends React.Component {
       return <h1>Something went wrong.</h1>;
     }
 //  <div className={"privacy-notice " + (localStorage.getItem('showPrivacyNotice') === "false" ? "hide" : "")}>
-    return <div id="slate">
-      <form id="messageForm">
-      <div><label>Message:</label></div>
-      <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onMessageChange}></textarea>
-      <p id="readStatus">{this.props.readStatus}</p>
-      <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
-      </form>
-      {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
-      {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+    return <div id="slate" className="row">
+      <div className="col-sm-6">
+        <form id="messageForm">
+        <div><label>Message:</label></div>
+        <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onMessageChange}></textarea>
+        <p id="readStatus">{this.props.readStatus}</p>
+        <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
+        </form>
+      </div>
+      <div className="col-sm-6">
+        {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
+        {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+      </div>
       <div className={"privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
         <div className="container">
           <p>
@@ -136,7 +140,9 @@ export default class Slate extends React.Component {
           </div>
         </div>
       </div>
-      <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
+      <div class="col-sm-12">
+        <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
+      </div>
     </div>
   }
 }
