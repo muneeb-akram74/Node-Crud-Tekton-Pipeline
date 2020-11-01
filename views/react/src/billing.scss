@@ -33,12 +33,40 @@ span.light {
 	color: #555;
 }
 
-.slate-requestor-email-field {
+#messageTextArea,
+.slate-requestor-email-form input {
+	width: 100%;
+}
+
+.slate-requestor-email-form {
 	margin-bottom: 1rem;
 }
+
+
 
 #privacyModal {
 	top: unset;
 	height: unset;
 	bottom: 0;
+}
+
+.privacy-notice + button {
+	display: none;
+}
+
+.privacy-notice {
+	position: fixed;
+	bottom: 0;
+	background-color: white;
+	padding-top: 15px;
+  padding-bottom: 15px;
+	&.hide + button {
+		display: inline-block;
+	}
+}
+
+#messageForm,
+.register-me
+{
+	padding-bottom: 15px;
 }

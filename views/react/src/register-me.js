@@ -30,11 +30,11 @@ export default class RegisterMe extends React.Component {
 	componentDidMount() {
 	}
 	render() {
-		return <form>
+		return <form className="register-me">
 			<p>Looks good, please email me a recallable Slate to message Andrew:
 			  <label></label>
 			</p>
-			<div className="slate-requestor-email-field">
+			<div className="slate-requestor-email-form">
 			  <input onChange={this.handleChange}/>
 			</div>
 			<div className="submit-slate-request">

@@ -175,6 +175,6 @@ class CommunicationTools extends React.Component {
 }
 //ReactDOM.render(React.createElement(CommunicationTools),
 //    document.querySelector('#communication-tools-container'));
-$('#privacyModal').modal('show');
+//$('#privacyModal').modal('show');
 ReactDOM.render(<CommunicationTools/>,
     document.querySelector('#communication-tools-container'));

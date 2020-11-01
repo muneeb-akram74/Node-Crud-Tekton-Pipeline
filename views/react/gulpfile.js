@@ -5,6 +5,8 @@ var browserSync = require('browser-sync').create();
 
 var less = 
     require('gulp-less');
+var sass = 
+  require('gulp-sass');
 var path = require('path');
 var minifyCSS = 
     require('gulp-csso');
@@ -21,6 +23,20 @@ gulp.task('css', function(){
     )
     .pipe(less({
         paths: [ path.join(__dirname, 'less', 'includes') ]
+      }))
+    // .pipe(minifyCSS())
+    .pipe(gulp.dest(
+        '.'
+    ))
+    .pipe(browserSync.stream());
+});
+
+gulp.task('sass', function(){
+    return gulp.src(
+        'src/*.scss'
+    )
+    .pipe(sass({
+        paths: [ path.join(__dirname, 'scss', 'includes') ]
       }))
     // .pipe(minifyCSS())
     .pipe(gulp.dest(
@@ -65,7 +81,7 @@ gulp.task('serve', function() {
 });
 
 gulp.task('default',
-    gulp.series('js', 'css', 'serve', function (done) {
+    gulp.series('js', 'css', 'sass', 'serve', function (done) {
         console.log('task after task array');
         done();
     }),

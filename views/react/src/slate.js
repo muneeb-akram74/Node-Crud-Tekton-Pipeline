@@ -14,11 +14,14 @@ export default class Slate extends React.Component {
         messageDirty: false,
         messageSubmitButtonText: 'Submit message',
         messageNonDirtySubmitButtonText: this.messageNonDirtySubmitButtonText,
-        hasError: false
+        hasError: false,
+        showPrivacyNotice: true,
     };
     this.textAreaRef = React.createRef();
     this.handleClick = this.handleClick.bind(this);
     this.onMessageChange = this.onMessageChange.bind(this);
+    this.handlePrivacyNoticeClose = this.handlePrivacyNoticeClose.bind(this);
+    this.handlePrivacyNoticeOpen = this.handlePrivacyNoticeOpen.bind(this);
   }
   
   static getDerivedStateFromError(error) {
@@ -83,12 +86,29 @@ export default class Slate extends React.Component {
     }
   }
   
+  handlePrivacyNoticeClose(e) {
+//    e.preventDefault(0);
+    localStorage.setItem('showPrivacyNotice', 'false');
+    this.setState({
+      showPrivacyNotice: false
+    });
+  }
+  
+  handlePrivacyNoticeOpen() {
+    localStorage.setItem('showPrivacyNotice', 'true');
+    this.setState({
+      showPrivacyNotice: true
+    });
+  }
+  
   componentDidMount() {
     this.textAreaRef.current.focus();
     this.setState({
-      message: this.props.message
+      message: this.props.message,
+      showPrivacyNotice: localStorage.getItem('showPrivacyNotice') === "true",
     })
     this.state.messageSubmitButtonText = this.state.messageNonDirtySubmitButtonText;
+//    if (localStorage.getItem('showPrivacyNotice') === "")
   }
   
   render() {
@@ -96,15 +116,27 @@ export default class Slate extends React.Component {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
+//  <div className={"privacy-notice " + (localStorage.getItem('showPrivacyNotice') === "false" ? "hide" : "")}>
     return <div id="slate">
       <form id="messageForm">
-        <div><label>Message:</label></div>
-        <textarea id="messageTextArea" rows="10" cols="50" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onMessageChange}></textarea>
-        <p id="readStatus">{this.props.readStatus}</p>
-        <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
+      <div><label>Message:</label></div>
+      <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} defaultValue={this.props.message} onChange={this.onMessageChange}></textarea>
+      <p id="readStatus">{this.props.readStatus}</p>
+      <input disabled={this.state.messageDirty ? false : 'disabled'} type="submit" value={this.state.messageSubmitButtonText} onClick={this.handleClick} onChange={this.getContent.bind(this)}/>
       </form>
-        {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
-        {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+      {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
+      {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+      <div className={"privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
+        <div className="container">
+          <p>
+            If you provide your email, this site collects your email only to provide the service.
+          </p>
+          <div>
+            <button onClick={this.handlePrivacyNoticeClose}>Close</button>
+          </div>
+        </div>
+      </div>
+      <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
     </div>
   }
 }
