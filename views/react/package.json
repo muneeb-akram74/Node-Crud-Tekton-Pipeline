@@ -33,6 +33,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "browser-sync": "^2.24.7",
+    "browser-sync-close-hook": "^1.0.5",
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^0.2.9",

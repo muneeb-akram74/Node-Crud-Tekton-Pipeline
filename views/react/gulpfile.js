@@ -16,6 +16,7 @@ var uglify =
     require('gulp-uglify');
 var sourcemaps =
     require('gulp-sourcemaps');
+const autoClose = require('browser-sync-close-hook');
 
 gulp.task('css', function(){
     return gulp.src(
@@ -67,8 +68,14 @@ gulp.task('js', function(done){
 
 // Static Server + watching scss/html files
 // gulp.task('serve', ['css'], function() {
-gulp.task('serve', function() {
-
+gulp.task('serve', function(done) {
+  browserSync.use({
+    plugin() {},
+    hooks: {
+      'client:js': autoClose, // <-- important part
+    },
+  });
+  
     browserSync.init({
         open: false,
         server: "."
