@@ -86,8 +86,7 @@ export default class Slate extends React.Component {
     }
   }
   
-  handlePrivacyNoticeClose(e) {
-//    e.preventDefault(0);
+  handlePrivacyNoticeClose() {
     localStorage.setItem('showPrivacyNotice', 'false');
     this.setState({
       showPrivacyNotice: false
@@ -132,6 +131,7 @@ export default class Slate extends React.Component {
       </div>
       <div className={"privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
         <div className="container">
+          <h5>Privacy Notice</h5>
           <p>
             If you provide your email, this site collects your email only to provide the service.
           </p>
