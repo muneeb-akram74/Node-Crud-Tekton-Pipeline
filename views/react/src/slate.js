@@ -108,7 +108,6 @@ export default class Slate extends React.Component {
         || localStorage.getItem('showPrivacyNotice') === null,
     })
     this.state.messageSubmitButtonText = this.state.messageNonDirtySubmitButtonText;
-//    if (localStorage.getItem('showPrivacyNotice') === "")
   }
   
   render() {
@@ -116,7 +115,6 @@ export default class Slate extends React.Component {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
-//  <div className={"privacy-notice " + (localStorage.getItem('showPrivacyNotice') === "false" ? "hide" : "")}>
     return <div id="slate" className="row">
       <div className="col-sm-6">
         <form id="messageForm">
