@@ -83,11 +83,7 @@ gulp.task('serve', function(done) {
     // proxy: 'yourserver.dev'
     // This accommodates the existing NodeJS setup
     proxy: "localhost:8080/react/slate/123"
-    });
-  }
-  else {
-    window.location.reload();
-  }
+  });
 
   gulp.watch("lib/css/*.css");
   // gulp.watch("*.html").on('change', browserSync.reload);
