@@ -104,7 +104,8 @@ export default class Slate extends React.Component {
     this.textAreaRef.current.focus();
     this.setState({
       message: this.props.message,
-      showPrivacyNotice: localStorage.getItem('showPrivacyNotice') === "true",
+      showPrivacyNotice: localStorage.getItem('showPrivacyNotice') === "true"
+        || localStorage.getItem('showPrivacyNotice') === null,
     })
     this.state.messageSubmitButtonText = this.state.messageNonDirtySubmitButtonText;
 //    if (localStorage.getItem('showPrivacyNotice') === "")
@@ -140,7 +141,7 @@ export default class Slate extends React.Component {
           </div>
         </div>
       </div>
-      <div class="col-sm-12">
+      <div className="col-sm-12">
         <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
       </div>
     </div>
