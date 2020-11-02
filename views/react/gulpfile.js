@@ -77,14 +77,19 @@ gulp.task('serve', function(done) {
   });
   
     browserSync.init({
-        open: false,
-        server: "."
+//        open: false,
+        open: "local",
+//        server: ".",
         // or
         // proxy: 'yourserver.dev'
+        // This accommodates the existing NodeJS setup
+        proxy: "localhost:8080/react/slate/123"
     });
 
     gulp.watch("lib/css/*.css");
-    gulp.watch("*.html").on('change', browserSync.reload);
+//    gulp.watch("*.html").on('change', browserSync.reload);
+    gulp.watch(["*.html", ".js"]).on('change', browserSync.reload);
+    done();
 });
 
 gulp.task('default',
