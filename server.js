@@ -409,18 +409,20 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       message=req.body.message;
     }
     if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
-      slates.updateOne({key: req.params.key},
+      slates.updateOne({key: req.params.key.replace(/\$/gi, '-')},
           {$set: {message: message,
             updateTime: Date.now()}}
       );
-      cursor = slates.find({key: req.params.key});
+      cursor = slates.find({key: req.params.key.replace(/\$/gi, '-')});
       cursor.toArray().then((data)=>{
         if (data != undefined &&
-            data.length > 0 && data[0].hasOwnProperty('fromEmail') && 
-            data[0].hasOwnProperty('senderKey') && data[0].senderKey.toString() === req.params.senderKey.toString()) {
+            data.length > 0 && data[0].hasOwnProperty('fromEmail') 
+            && data[0].hasOwnProperty('senderKey') 
+            && req.params.hasOwnProperty('senderKey') 
+            && data[0].senderKey.toString() === req.params.senderKey.toString()) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
-              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key} into your browser's address field.`,
-              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key}">http://${req.headers.host}/react/slate/${req.params.key}</a> into your browser's address field.`
+              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')} into your browser's address field.`,
+              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}">http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}</a> into your browser's address field.`
               );
           
         }
@@ -571,16 +573,16 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
   } // if (db) 
 });
 
-app.get('/slate/:key/:senderKey?', function(req, res) {
-  console.log('key:'+req.params.key);
-  console.log('senderKey:'+req.params.senderKey);
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    res.render('slate.html', {  });
-  }
-});
+//app.get('/slate/:key/:senderKey?', function(req, res) {
+//  console.log('key:'+req.params.key);
+//  console.log('senderKey:'+req.params.senderKey);
+//  if (!db) {
+//    initDb(function(err){});
+//  }
+//  if (db) {
+//    res.render('slate.html', {  });
+//  }
+//});
 
 app.put('/slate/put95113/:key/:senderKey?', function(req, res) {
 //Plan to have user request, not directly to putxx, generate and email key with user email
