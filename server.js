@@ -494,7 +494,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
       
     if (typeof req.params.key === "string") {
       criteria = {
-          "key": decodeURIComponent(req.params.key)
+          "key": decodeURIComponent(req.params.key).replace(/\$/gi, 'a')
       }
       cursor = slates.find(criteria);
       cursor.toArray().then((data)=>{
