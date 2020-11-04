@@ -420,11 +420,13 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       );
       cursor = slates.find({key: req.params.key.replace(/\$/gi, '-')});
       cursor.toArray().then((data)=>{
-        if (data != undefined &&
-            data.length > 0 && data[0].hasOwnProperty('fromEmail') 
+        if (
+            data != undefined 
+            && data.length > 0 && data[0].hasOwnProperty('fromEmail') 
             && data[0].hasOwnProperty('senderKey') 
-            && req.params.hasOwnProperty('senderKey') 
-            && data[0].senderKey.toString() === req.params.senderKey.toString()) {
+            && req.params.hasOwnProperty('senderKey')
+            && data[0].senderKey.toString() === req.params.senderKey.toString()
+          ) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
               `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')} into your browser's address field.`,
               `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}">http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}</a> into your browser's address field.`
