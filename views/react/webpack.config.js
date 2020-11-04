@@ -1,14 +1,13 @@
 const path = require('path');
 
 module.exports = {
-    mode: 'development',
-
-//  entry: './build/js/app.min.js',
-//  entry: './src/billing.js',
+  mode: 'development',
+  // entry: './build/js/app.min.js',
+  // entry: './src/billing.js',
   entry: './src/communication-tools.js',
-// does not work:
-//    entry: './src',
-//  entry: './build/js/src/app.min.js',
+  // does not work:
+  // entry: './src',
+  // entry: './build/js/src/app.min.js',
   module: {
     rules: [
       { 
