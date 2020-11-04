@@ -5,6 +5,8 @@ The first sender may want to update it.
 Investigate why same Slate was returned.
 TODO: how about only having senderKey, receiverKey
 TODO how about notification of slate created
+TODO keep button width fixed during label changes?
+TODO synchronize message with submit-button for dirty check after successful persist?
 */
 //  OpenShift sample Node application
 const assert = require('assert');
@@ -28,12 +30,15 @@ Object.assign=require('object-assign')
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 app.use(express.json());
+const viewerPathToSlate = '/react/slate/';
+//const viewerPathToSlate = '/';
+
 // able to access main.js with:, but not GETing properly
-app.use('/react/slate/', express.static('views/react'));
+app.use(viewerPathToSlate, express.static('views/react'));
 //blocks main.js from loading if declared early:
-app.use('/react/slate/:key?', express.static('views/react'));
+app.use(viewerPathToSlate+':key?', express.static('views/react'));
 //works with /123/0
-app.use('/react/slate/:key?/:senderkey?', express.static('views/react'));
+app.use(viewerPathToSlate+':key?/:senderkey?', express.static('views/react'));
 app.use('/websocket/', express.static('views/websocket'));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
