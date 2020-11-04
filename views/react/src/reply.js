@@ -9,7 +9,8 @@ export default class Reply extends React.Component {
     this.state = {
 //        newFromEmail: this.props.fromEmail,
 //        newToEmail: this.props.toEmail,
-        emailIsValid: false
+      emailIsValid: false,
+      replyRequestButtonLabel: 'Reply',  
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -25,6 +26,9 @@ export default class Reply extends React.Component {
       let firstData = await fetch('/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail'));
       let statusJSON = firstData.json();
       console.log('status:' + JSON.stringify(statusJSON));
+      this.setState({
+        replyRequestButtonLabel: 'Submitted'
+      });
     }
     reply.bind(this)();
   }
@@ -34,7 +38,7 @@ export default class Reply extends React.Component {
     return <form>
       <p>
         <label>Reply with recallable slate with read receipt capability </label>
-        <input onClick={(e) => this.handleClick(e)} type="submit" value="Reply"/>
+        <input onClick={(e) => this.handleClick(e)} type="submit" value={this.state.replyRequestButtonLabel}/>
       </p>
       <div className="hide">
         <input onChange={this.handleChange}/>

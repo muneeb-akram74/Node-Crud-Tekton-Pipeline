@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import store from './redux/store'
 import UserAndId from './billing';
 import Slate from './slate';
 import ErrorBoundary from './error-boundary';
 import 'bootstrap';
-var $ = require( "jquery" );
 
 'use strict';
 
@@ -112,16 +112,18 @@ class CommunicationTools extends React.Component {
           }
           ReactDOM.render(
             <ErrorBoundary>
-              <Slate 
-                fromEmail={this.state.fromEmail} 
-                toEmail={this.state.toEmail} 
-                message={this.state.message} 
-                messageMaxLength={this.state.messageMaxLength} 
-                readStatus={this.state.readStatus} 
-                replyExists={this.state.replyExists} 
-                getStateProperty={this.getStateProperty.bind(this)}
-                features={this.state.features}
-              />
+              <Provider store={store}>
+                <Slate 
+                  fromEmail={this.state.fromEmail} 
+                  toEmail={this.state.toEmail} 
+                  message={this.state.message} 
+                  messageMaxLength={this.state.messageMaxLength} 
+                  readStatus={this.state.readStatus} 
+                  replyExists={this.state.replyExists} 
+                  getStateProperty={this.getStateProperty.bind(this)}
+                  features={this.state.features}
+                />
+              </Provider>
             </ErrorBoundary>, 
             document.getElementById('slateForm')
           );
@@ -175,6 +177,5 @@ class CommunicationTools extends React.Component {
 }
 //ReactDOM.render(React.createElement(CommunicationTools),
 //    document.querySelector('#communication-tools-container'));
-//$('#privacyModal').modal('show');
 ReactDOM.render(<CommunicationTools/>,
     document.querySelector('#communication-tools-container'));
