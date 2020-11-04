@@ -119,7 +119,7 @@ var initDb = function(callback) {
       console.log('Connected to MongoDB at: %s', mongoURL);
 
       db.collection('slates').countDocuments(function(err, count ){
-//      db.counts.count(function(err, count ){
+//      db.counts.countDocuments(function(err, count ){
           console.log('{ pageCount: ' + count + ' }');
 //    res.send('{ pageCount: ' + count + ' }');
       });
@@ -139,8 +139,8 @@ app.get('/', function (req, res) {
   if (db) {
     var col = db.collection('counts');
     // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
+    col.insertOne({ip: req.ip, date: Date.now()});
+    col.countDocuments(function(err, count){
       if (err) {
         console.log('Error running count. Message:\n'+err);
       }
@@ -171,8 +171,8 @@ app.get('/pagecount', function (req, res) {
     initDb(function(err){});
   }
   if (db) {
-    //db.collection('counts').count(function(err, count ){
-    db.counts.count(function(err, count ){
+    //db.collection('counts').countDocumentsfunction(err, count ){
+    db.counts.countDocuments(function(err, count ){
       console.log('count');
       res.send('{ pageCount: ' + count + '}');
     });
@@ -310,7 +310,7 @@ app.get('/email-slate/:fromEmail', function(req, res) {
     if(emailArray.length === 0) {
       let key = req.params.fromEmail + '-' + generateKey(15);
       let senderKey = generateKey(3);
-      slates.insert({
+      slates.insertOne({
         ip: req.ip, 
         date: Date.now(), 
         fromEmail: req.params.fromEmail,
@@ -372,7 +372,7 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
             }
           }
       );
-      slates.insert({
+      slates.insertOne({
         ip: req.ip, 
         date: Date.now(), 
         fromEmail: req.params.fromEmail,
@@ -489,7 +489,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
 //                senderKey: '321'
 //              };
 //          edits.key = item;
-//          slates.insert(Object.assign(starterSlateCommonProperties, edits))
+//          slates.insertOne(Object.assign(starterSlateCommonProperties, edits))
 //        }
 //      },
 //      (err)=>{
@@ -594,7 +594,7 @@ app.put('/slate/put95113/:key/:senderKey?', function(req, res) {
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
   let slates = db.collection('slates');
-  slates.insert({
+  slates.insertOne({
     ip: req.ip, 
     date: Date.now(), 
     key: req.params.key, 
