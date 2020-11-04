@@ -128,15 +128,13 @@ export default class Slate extends React.Component {
         {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
         {location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
       </div>
-      <div className={"privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
-        <div className="container">
-          <h5>Privacy Notice</h5>
-          <p>
-            If you provide your email, this site collects your email only to provide the service.
-          </p>
-          <div>
-            <button onClick={this.handlePrivacyNoticeClose}>Close</button>
-          </div>
+      <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
+        <h5>Privacy Notice</h5>
+        <p>
+          If you provide your email, this site collects your email only to provide the service.
+        </p>
+        <div>
+          <button onClick={this.handlePrivacyNoticeClose}>Close</button>
         </div>
       </div>
       <div className="col-sm-12">
