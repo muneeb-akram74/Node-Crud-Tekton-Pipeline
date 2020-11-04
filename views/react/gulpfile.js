@@ -75,8 +75,8 @@ gulp.task('serve', function(done) {
   });
   
   browserSync.init({
-    // open: false,
-    open: "tunnel",
+    open: false,
+    // open: "tunnel",
     reloadOnRestart: true,
     // server: ".",
     // or
