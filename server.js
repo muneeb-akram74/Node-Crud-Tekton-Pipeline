@@ -425,6 +425,7 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
             && data.length > 0 && data[0].hasOwnProperty('fromEmail') 
             && data[0].hasOwnProperty('senderKey') 
             && req.params.hasOwnProperty('senderKey')
+            && req.params.senderKey !== undefined
             && data[0].senderKey.toString() === req.params.senderKey.toString()
           ) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
