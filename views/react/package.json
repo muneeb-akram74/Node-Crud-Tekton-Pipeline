@@ -7,8 +7,8 @@
     "build": "npx webpack",
     "npx-webpack": "npx webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:watch20201031": "watch \"npm run build && gulp\" src",
-    "build:watch": "watch \"npm run build && gulp watch\" src"
+    "build:watch20201031": "watch \"npm run build && gulp watch\" src",
+    "build:watch": "watch \"npm run build && gulp\" src"
   },
   "main": "index.js",
   "keywords": [],
