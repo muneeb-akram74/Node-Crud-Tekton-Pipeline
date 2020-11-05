@@ -37,7 +37,7 @@ export default class Reply extends React.Component {
   render() {
     return <form>
       <p>
-        <label>Reply with recallable slate with read receipt capability </label>
+        <label className="reply-slate-label">Reply with recallable slate with read receipt capability </label>
         <input onClick={(e) => this.handleClick(e)} type="submit" value={this.state.replyRequestButtonLabel}/>
       </p>
       <div className="hide">
