@@ -57,22 +57,6 @@ class Slate extends React.Component {
     }
   }
   
-  onMessageUpdate() {
-    if(this.props.submittedMessage !== this.state.message) {
-      this.setState({
-        messageDirty: true,
-        messageSubmitButtonText: 'Submit message',
-//        message: e.target.value,
-      })
-    }
-    else {
-      this.setState({
-        messageDirty: false,
-        messageSubmitButtonText: this.messageNonDirtySubmitButtonText,
-      })
-    }
-  }
-  
   handleClick(e) {
     e.preventDefault(0);
     let postData = async function (url = '', data = {}) {
