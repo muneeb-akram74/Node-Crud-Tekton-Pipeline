@@ -26,8 +26,7 @@ class SubmitButton extends React.Component {
     e.preventDefault(0);
     let sendData = async function (url = '', data = {}, resolve, reject) {
       this.setState({ submitButtonLabel: 'Submitting'});
-      try {
-        const firstData = await fetch(url, {
+      let callParams = {
           method: this.props.method,
           mode: 'cors',
           cache: 'no-cache',
@@ -38,6 +37,9 @@ class SubmitButton extends React.Component {
           redirect: 'follow',
           referrer: 'no-referrer',
           body: JSON.stringify(data)
+      }
+      try {
+        const firstData = await fetch(url, {
         });
         let response = await firstData.json();
         if(response.status === 'processed') {
@@ -48,7 +50,8 @@ class SubmitButton extends React.Component {
           }, 3000);
         }
       }
-      catch {
+      catch(err) {
+        console.log('err:'+err);
         this.setState({ submitButtonLabel: this.abnormalSubmitButtonLabel});
         setTimeout(()=>{
           this.setState({ submitButtonLabel: 'Submit message'});

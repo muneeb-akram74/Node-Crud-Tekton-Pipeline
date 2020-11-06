@@ -155,8 +155,12 @@ class Slate extends React.Component {
         </form>
       </div>
       <div className="col-sm-6">
-        {replyFeatureOn && !this.props.replyExists ? <Reply getStateProperty={this.props.getStateProperty} /> : ''}
-        {!replyFeatureOn && location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+        {replyFeatureOn
+          && !(location.href.match(/slate\/(.*?)\//)[1] === '123')
+          && !this.props.replyExists ? 
+            <Reply getStateProperty={this.props.getStateProperty} /> : ''}
+        {!replyFeatureOn 
+          && location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
       </div>
       <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
         <h5>Privacy Notice</h5>

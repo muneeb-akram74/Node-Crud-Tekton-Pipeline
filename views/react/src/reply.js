@@ -1,5 +1,6 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import SubmitButton from './submit-button';
 
 'use strict';
 
@@ -14,6 +15,7 @@ export default class Reply extends React.Component {
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.disabledSubmitButtonLabel = 'Waiting for formatted email';
   }
   handleChange(e) {
     this.setState({
@@ -39,6 +41,13 @@ export default class Reply extends React.Component {
       <p>
         <label className="reply-slate-label">Reply with recallable slate with read receipt capability </label>
         <input onClick={(e) => this.handleClick(e)} type="submit" value={this.state.replyRequestButtonLabel}/>
+        <SubmitButton 
+          xdisabled={/(.*)@(.+)\.(.+)/.test(this.state.newFromEmail) ? false : 'disabled'}
+          disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
+          submitButtonLabel={this.state.replyRequestButtonLabel}
+          method="GET"
+          url={'/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail')}
+        />
       </p>
       <div className="hide">
         <input onChange={this.handleChange}/>
