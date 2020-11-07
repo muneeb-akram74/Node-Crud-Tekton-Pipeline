@@ -359,7 +359,10 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
   
   async function checkEmailDuplication() {
     emailArray = await cursor.toArray();
-    if(emailArray.length === 0) {
+    if (emailArray.length !== 0) {
+      res.send({"status": "duplicate, so not added"});
+    }
+    else {
       let key = req.params.fromEmail + '-' + generateKey(15);
       let senderKey = generateKey(3);
       slates.updateOne(
@@ -393,9 +396,6 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
           );
       
       res.send({"status": "processed"});
-    }
-    else {
-      res.send({"status": "duplicate, so not added"});
     }
   }
   checkEmailDuplication();
