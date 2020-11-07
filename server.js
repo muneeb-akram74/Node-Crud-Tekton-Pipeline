@@ -22,6 +22,7 @@ var sendGridAllowedFromEmails = [
   'ashaw85@hotmail.com',
   'pweqoes@netmail.tk',
 ];
+//outlook.com and hotmail.com emails cannot receive SendGrid mails
 var selectedFromEmail = sendGridAllowedFromEmails[2];
 
 require('./chat-server')();
