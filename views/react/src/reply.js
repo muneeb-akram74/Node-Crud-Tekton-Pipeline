@@ -27,7 +27,6 @@ export default class Reply extends React.Component {
     async function reply() {
       let firstData = await fetch('/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail'));
       let statusJSON = firstData.json();
-      console.log('status:' + JSON.stringify(statusJSON));
       this.setState({
         replyRequestButtonLabel: 'Submitted'
       });
@@ -40,13 +39,12 @@ export default class Reply extends React.Component {
     return <form>
       <p>
         <label className="reply-slate-label">Reply with recallable slate with read receipt capability </label>
-        <input onClick={(e) => this.handleClick(e)} type="submit" value={this.state.replyRequestButtonLabel}/>
         <SubmitButton 
-          xdisabled={/(.*)@(.+)\.(.+)/.test(this.state.newFromEmail) ? false : 'disabled'}
+          context="reply"
           disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
           submitButtonLabel={this.state.replyRequestButtonLabel}
           method="GET"
-          url={'/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail')}
+          url={'/email-slate-to-990/' + this.props.getStateProperty('toEmail') + '/' + this.props.getStateProperty('fromEmail')}
         />
       </p>
       <div className="hide">

@@ -145,6 +145,7 @@ class Slate extends React.Component {
           <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={this.state.message} onChange={this.onMessageChange}></textarea>
           <p id="readStatus">{this.props.readStatus}</p>
           <SubmitButton 
+            context="slate"
             disabled={this.state.messageDirty && this.props.submittedMessage !== this.state.message ? false : 'disabled'}
             disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
             submitButtonLabel={this.state.messageSubmitButtonText}

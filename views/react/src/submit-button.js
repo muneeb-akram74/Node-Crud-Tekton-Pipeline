@@ -27,34 +27,38 @@ class SubmitButton extends React.Component {
     let sendData = async function (url = '', data = {}, resolve, reject) {
       this.setState({ submitButtonLabel: 'Submitting'});
       let callParams = {
-          method: this.props.method,
-          mode: 'cors',
-          cache: 'no-cache',
-          credentials: 'same-origin',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          redirect: 'follow',
-          referrer: 'no-referrer',
-          body: JSON.stringify(data)
+        method: this.props.method,
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrer: 'no-referrer',
+      }
+      if (this.props.hasOwnProperty('payload') && Object.keys(this.props.payload).length > 0) {
+        callParams.body = JSON.stringify(data);
       }
       try {
-        const firstData = await fetch(url, {
-        });
+        const firstData = await fetch(url, callParams);
         let response = await firstData.json();
         if(response.status === 'processed') {
           this.setState({ submitButtonLabel: 'Submitted'});
           this.props.changeMessage(document.getElementById('messageTextArea').value);
-          setTimeout(()=>{
-            this.setState({ submitButtonLabel: 'Submit message'});
-          }, 3000);
         }
+        if(response.status.indexOf('duplicate') > -1) {
+          this.setState({ submitButtonLabel: 'Already submitted'});
+        } 
+        setTimeout(()=>{
+          this.setState({ submitButtonLabel: this.props.submitButtonLabel});
+        }, 3000);
       }
       catch(err) {
         console.log('err:'+err);
         this.setState({ submitButtonLabel: this.abnormalSubmitButtonLabel});
         setTimeout(()=>{
-          this.setState({ submitButtonLabel: 'Submit message'});
+          this.setState({ submitButtonLabel: this.props.submitButtonLabel});
         }, 3000);
       }
       return;
