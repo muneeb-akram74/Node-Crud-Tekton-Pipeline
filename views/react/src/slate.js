@@ -145,13 +145,14 @@ class Slate extends React.Component {
       senderKey = location.href.match(/slate\/(.*?)\/(.*?)\//)[2];
     }
     else {
-      senderKey = '';
+      senderKey = '-';
     }
     let payload = {
       message: this.state.message,
       key: location.href.match(/slate\/(.*?)\//)[1],
       senderKey,
     };
+//    url={"/slate/post/"+location.href.match(/slate\/(.*)/)[1]}
     return <div id="slate" className="row">
       <div className="col-sm-6">
         <form id="messageForm">
@@ -164,7 +165,7 @@ class Slate extends React.Component {
             disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
             submitButtonLabel={this.state.messageSubmitButtonText}
             method="POST"
-            url={"/slate/post/"+location.href.match(/slate\/(.*)/)[1]}
+            url={"/slate/post/"}
             payload={payload}
           />
         </form>

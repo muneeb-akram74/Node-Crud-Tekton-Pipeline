@@ -402,26 +402,26 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
   checkEmailDuplication();
 });
 
-app.post('/slate/post/:key/:senderKey?', function(req, res) {
-  const filteredParamsKey = req.params.key.replace(/\$/gi, '-');
-  const filteredParamsSenderKey = req.params.senderKey.replace(/\$/gi, '-');
+app.post('/slate/post', function(req, res) {
+//  const filteredParamsKey = req.params.key.replace(/\$/gi, '-');
+//  const filteredParamsSenderKey = req.params.senderKey.replace(/\$/gi, '-');
   const filteredPayloadKey = req.body.key.replace(/\$/gi, '-');
   const filteredPayloadSenderKey = req.body.senderKey.replace(/\$/gi, '-');
-  const filteredKey = filteredParamsKey;
-  const filteredSenderKey = filteredParamsSenderKey;
+  const filteredKey = filteredPayloadKey;
+  const filteredSenderKey = filteredPayloadSenderKey;
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
     let slates = db.collection('slates');
     let message;
-    if (req.params.key === '123' && req.body.message.length>3) {
+    if (filteredKey === '123' && req.body.message.length>3) {
       message=req.body.message.substring(0,3);
     }
     else {
       message=req.body.message;
     }
-    if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
+    if (typeof filteredKey === 'number' || typeof filteredKey === 'string') {
       slates.updateOne({key: filteredKey},
           {$set: {message: message,
             updateTime: Date.now()}}
