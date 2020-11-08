@@ -9,7 +9,6 @@ import { getMessageState } from './redux/selectors';
 
 'use strict';
 
-//export default class Slate extends React.Component {
 class Slate extends React.Component {
   constructor(props){
     super(props);
@@ -152,7 +151,6 @@ class Slate extends React.Component {
       key: location.href.match(/slate\/(.*?)\//)[1],
       senderKey,
     };
-//    url={"/slate/post/"+location.href.match(/slate\/(.*)/)[1]}
     return <div id="slate" className="row">
       <div className="col-sm-6">
         <form id="messageForm">
@@ -181,7 +179,7 @@ class Slate extends React.Component {
       <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
         <h5>Privacy Notice</h5>
         <p>
-          If you provide your email, this site collects your email only to provide the service.
+          If you provide your email, this site collects your email to provide the service and notify of changes in the service that may affect you.
         </p>
         <div>
           <button onClick={this.handlePrivacyNoticeClose}>Close</button>
