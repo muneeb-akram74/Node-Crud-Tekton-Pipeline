@@ -40,6 +40,7 @@ app.use(viewerPathToSlate, express.static('views/react'));
 app.use(viewerPathToSlate+':key?', express.static('views/react'));
 //works with /123/0
 app.use(viewerPathToSlate+':key?/:senderkey?', express.static('views/react'));
+//app.use(viewerPathToSlate+':key?/:senderkey?/:featurename?', express.static('views/react'));
 app.use('/websocket/', express.static('views/websocket'));
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
@@ -402,6 +403,7 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
 });
 
 app.post('/slate/post/:key/:senderKey?', function(req, res) {
+  const filteredKey = req.params.key.replace(/\$/gi, '-');
   if (!db) {
     initDb(function(err){});
   }
@@ -415,11 +417,11 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
       message=req.body.message;
     }
     if (typeof req.params.key === 'number' || typeof req.params.key === 'string') {
-      slates.updateOne({key: req.params.key.replace(/\$/gi, '-')},
+      slates.updateOne({key: filteredKey},
           {$set: {message: message,
             updateTime: Date.now()}}
       );
-      cursor = slates.find({key: req.params.key.replace(/\$/gi, '-')});
+      cursor = slates.find({key: filteredKey});
       cursor.toArray().then((data)=>{
         if (
             data != undefined 
@@ -430,8 +432,8 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
             && data[0].senderKey.toString() === req.params.senderKey.toString()
           ) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
-              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')} into your browser's address field.`,
-              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}">http://${req.headers.host}/react/slate/${req.params.key.replace(/\$/gi, '-')}</a> into your browser's address field.`
+              `To see your slate, copy and paste http://${req.headers.host}/react/slate/${filteredKey} into your browser's address field.`,
+              `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${filteredKey}">http://${req.headers.host}/react/slate/${filteredKey}</a> into your browser's address field.`
               );
           
         }
