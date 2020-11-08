@@ -402,7 +402,7 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
   checkEmailDuplication();
 });
 
-app.post('/slate/post', function(req, res) {
+app.put('/slate/put', function(req, res) {
 //  const filteredParamsKey = req.params.key.replace(/\$/gi, '-');
 //  const filteredParamsSenderKey = req.params.senderKey.replace(/\$/gi, '-');
   const filteredPayloadKey = req.body.key.replace(/\$/gi, '-');
@@ -567,8 +567,8 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
             updateViewedTime();
           }
           delete data[0].senderKey;
-//              delete data[0].toEmail;
-//              delete data[0].fromEmail;
+          delete data[0].toEmail;
+          delete data[0].fromEmail;
           async function replyExists() {
             return await checkExistenceReply();
           }

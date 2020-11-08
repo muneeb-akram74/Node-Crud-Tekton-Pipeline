@@ -162,8 +162,8 @@ class Slate extends React.Component {
             disabled={this.state.messageDirty && this.props.submittedMessage !== this.state.message ? false : 'disabled'}
             disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
             submitButtonLabel={this.state.messageSubmitButtonText}
-            method="POST"
-            url={"/slate/post/"}
+            method="PUT"
+            url={"/slate/put/"}
             payload={payload}
           />
         </form>
