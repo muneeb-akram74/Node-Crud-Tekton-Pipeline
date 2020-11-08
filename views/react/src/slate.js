@@ -130,6 +130,7 @@ class Slate extends React.Component {
   }
   
   render() {
+    let senderKey;
     let replyFeatureOn = 
       this.props.features[0].reply === "true" 
         || location.href.indexOf('feature=reply') > -1 
@@ -137,7 +138,20 @@ class Slate extends React.Component {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
-    let payload = {message: this.state.message};
+    if (
+      location.href.match(/slate\/(.*?)\/(.*?)\//) !== null
+      && location.href.match(/slate\/(.*?)\/(.*?)\//)[2] !== null) 
+    {
+      senderKey = location.href.match(/slate\/(.*?)\/(.*?)\//)[2];
+    }
+    else {
+      senderKey = '';
+    }
+    let payload = {
+      message: this.state.message,
+      key: location.href.match(/slate\/(.*?)\//)[1],
+      senderKey,
+    };
     return <div id="slate" className="row">
       <div className="col-sm-6">
         <form id="messageForm">

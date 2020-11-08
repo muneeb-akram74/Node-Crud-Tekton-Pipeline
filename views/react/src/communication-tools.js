@@ -43,6 +43,8 @@ class CommunicationTools extends React.Component {
           try {
             response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
                 '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]);
+//            response = await fetch('/slate/get/'+location.href.match(/slate\/(.*)\/(.*)/)[1] + 
+//              '/' + location.href.match(/slate\/(.*)\/(.*)/)[2]); 
               if(response.status !== 200) {
                 throw new Error();
               }
