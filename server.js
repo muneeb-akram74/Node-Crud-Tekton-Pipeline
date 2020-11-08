@@ -403,7 +403,12 @@ app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
 });
 
 app.post('/slate/post/:key/:senderKey?', function(req, res) {
-  const filteredKey = req.params.key.replace(/\$/gi, '-');
+  const filteredParamsKey = req.params.key.replace(/\$/gi, '-');
+  const filteredParamsSenderKey = req.params.senderKey.replace(/\$/gi, '-');
+  const filteredPayloadKey = req.body.key.replace(/\$/gi, '-');
+  const filteredPayloadSenderKey = req.body.senderKey.replace(/\$/gi, '-');
+  const filteredKey = filteredParamsKey;
+  const filteredSenderKey = filteredParamsSenderKey;
   if (!db) {
     initDb(function(err){});
   }
@@ -428,8 +433,8 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
             && data.length > 0 && data[0].hasOwnProperty('fromEmail') 
             && data[0].hasOwnProperty('senderKey') 
             && req.params.hasOwnProperty('senderKey')
-            && req.params.senderKey !== undefined
-            && data[0].senderKey.toString() === req.params.senderKey.toString()
+            && filteredSenderKey !== undefined
+            && data[0].senderKey.toString() === filteredSenderKey.toString()
           ) {
           mail(data[0].toEmail, data[0].fromEmail, data[0].fromEmail + ' has updated the slate', 
               `To see your slate, copy and paste http://${req.headers.host}/react/slate/${filteredKey} into your browser's address field.`,
@@ -438,7 +443,11 @@ app.post('/slate/post/:key/:senderKey?', function(req, res) {
           
         }
       });
-      res.send('{"status": "processed"}');
+      let response = {
+        "status": "processed",
+        "revision": "202011081151"
+      };
+      res.send(response);
     }
     else {
       console.log('Key was not a string, so barred.');
