@@ -33,6 +33,9 @@ app.use(morgan('combined'))
 app.use(express.json());
 const viewerPathToSlate = '/react/slate/';
 //const viewerPathToSlate = '/';
+function filterInput(input) {
+  return input.replace(/\$/gi, '-');
+}
 
 // able to access main.js with:, but not GETing properly
 app.use(viewerPathToSlate, express.static('views/react'));
@@ -136,7 +139,9 @@ app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
   if (!db) {
-    initDb(function(err){});
+    initDb(function(err){
+      console.log('error initDb');
+    });
   }
   if (db) {
     var col = db.collection('counts');
@@ -340,71 +345,76 @@ app.get('/email-slate/:fromEmail', function(req, res) {
   checkEmailDuplication();
 });
 
-app.get('/email-slate-to-990/:fromEmail/:toEmail', function(req, res) {
+app.post('/email-slate-to-990', function(req, res) {
   // Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
   console.log('feature:'+req.query.feature);
-  if (
-      !/(.*)@(.+)\.(.+)/.test(req.params.fromEmail)
-      || !/(.*)@(.+)\.(.+)/.test(req.params.toEmail)
-  ) {
-    res.send({"status": "malformed email"});
-    return;
+  if (!db) {
+    initDb(function(err){
+      console.log('error initDb');
+    });
   }
-  let slates = db.collection('slates');
-  let cursor = slates.find({
-    "fromEmail": req.params.fromEmail,
-    "toEmail": req.params.toEmail
-  });
-  
-  async function checkEmailDuplication() {
-    emailArray = await cursor.toArray();
-    if (emailArray.length !== 0) {
-      res.send({"status": "duplicate, so not added"});
-    }
-    else {
-      let key = req.params.fromEmail + '-' + generateKey(15);
-      let senderKey = generateKey(3);
-      slates.updateOne(
-          {
-            fromEmail: req.params.toEmail,
-            toEmail: req.params.fromEmail
-          },
-          {
-            $set: {
-              replyExists: true
-            }
-          }
-      );
-      slates.insertOne({
-        ip: req.ip, 
-        date: Date.now(), 
-        fromEmail: req.params.fromEmail,
-        toEmail: req.params.toEmail,
-        key: key, 
-        message: 'Hi.', 
-        senderKey: senderKey
-      });
-      mail(req.params.fromEmail, 'andrew95051@outlook.com', 'Your slate', 
-          `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
-          `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
+  if (db) {
+    const filteredKeyFromPayload = filterInput(req.body.key);
+    const slates = db.collection('slates');
+    const originalSlateCursor = slates.find({
+      "key": filteredKeyFromPayload,
+    });
+    
+    async function getOriginalSlate() {
+      slatesArray = await originalSlateCursor.toArray();
+      if (slatesArray.length === 0) {
+        res.send({"status":"The original slate is not there now"});
+      }
+      else {
+        const existingReplySlateCursor = slates.find({
+          "toEmail": slatesArray[0].fromEmail,
+          "fromEmail": slatesArray[0].toEmail,
+        });
+        existingReplySlateArray = await existingReplySlateCursor.toArray();
+        if (existingReplySlateArray.length > 0) {
+          res.status(406).send({"status":"A reply slate exists already, duplicate."});
+          return;
+        }
+        let key = slatesArray[0].toEmail + '-' + generateKey(15);
+        let senderKey = generateKey(3);
+        slates.insertOne({
+          ip: req.ip, 
+          date: Date.now(), 
+          fromEmail: slatesArray[0].toEmail,
+          toEmail: slatesArray[0].fromEmail,
+          key: key, 
+          message: 'Hi.', 
+          senderKey: senderKey
+        });
+        try {
+          mail(slatesArray[0].toEmail, 'andrew95051@outlook.com', 'Your slate', 
+            `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
+            `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
           );
-
-      mail(req.params.toEmail, 'andrew95051@outlook.com', 'Your slate', 
-          `You have received a slate from ${req.params.fromEmail}. To notify sender of receipt and read your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
-          `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To notify sender of receipt and read your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
+        }
+        catch(err) {
+          res.send({"status": "error sending owner slate"});
+        }
+        try {
+          mail(slatesArray[0].fromEmail, 'andrew95051@outlook.com', 'Your slate', 
+            `You have received a slate from ${slatesArray[0].toEmail}. To notify sender of receipt and read your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
+            `You have received a slate from <a href="mailto:${slatesArray[0].toEmail}">${slatesArray[0].toEmail}</a>. To notify sender of receipt and read your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
           );
-      
-      res.send({"status": "processed"});
+        }
+        catch(err) {
+          res.send({"status": "error sending recipient slate"});
+        }
+        
+        res.send({"status": "processed"});
+      }
     }
+    getOriginalSlate();
   }
-  checkEmailDuplication();
 });
 
 app.put('/slate/put', function(req, res) {
-//  const filteredParamsKey = req.params.key.replace(/\$/gi, '-');
-//  const filteredParamsSenderKey = req.params.senderKey.replace(/\$/gi, '-');
   const filteredPayloadKey = req.body.key.replace(/\$/gi, '-');
   const filteredPayloadSenderKey = req.body.senderKey.replace(/\$/gi, '-');
   const filteredKey = filteredPayloadKey;

@@ -8,12 +8,13 @@ class SubmitButton extends React.Component {
   constructor(props){
     super(props);
     this.abnormalSubmitButtonLabel = 'Abnormal, not submitted';
-    let submitButtonLabel;
+    let submitButtonLabel = "Submit";
+    let submittedButtonLabel = "Submitted";
     if(this.props.submitButtonLabel) {
       submitButtonLabel = this.props.submitButtonLabel;
     }
-    else {
-      submitButtonLabel = "Submit";
+    if (this.props.submittedButtonLabel !== undefined) {
+      submittedButtonLabel = this.props.submittedButtonLabel;
     }
     this.state = {
       disabled: false,
@@ -43,16 +44,15 @@ class SubmitButton extends React.Component {
       try {
         const firstData = await fetch(url, callParams);
         let response = await firstData.json();
-        if(response.status === 'processed') {
-          this.setState({ submitButtonLabel: 'Submitted'});
+        if (response.status === 'processed' || response.status.indexOf('duplicate') > -1) {
+          this.setState({ submitButtonLabel: this.props.submittedButtonLabel});
           this.props.changeMessage(document.getElementById('messageTextArea').value);
         }
-        if(response.status.indexOf('duplicate') > -1) {
-          this.setState({ submitButtonLabel: 'Already submitted'});
-        } 
-        setTimeout(()=>{
-          this.setState({ submitButtonLabel: this.props.submitButtonLabel});
-        }, 3000);
+        if (!this.props.onceOnly) {
+          setTimeout(()=>{
+            this.setState({ submitButtonLabel: this.props.submitButtonLabel});
+          }, 3000);
+        }
       }
       catch(err) {
         console.log('err:'+err);
@@ -80,10 +80,13 @@ class SubmitButton extends React.Component {
   
   render() {
     return <input 
-      disabled={this.props.disabled} 
+      disabled={this.props.disabled 
+        || this.state.disabled
+        || this.props.onceOnly 
+        && this.state.submitButtonLabel === this.props.submittedButtonLabel ? 'disabled' : false} 
       type="submit" 
       value={this.props.disabled
-        && this.state.submitButtonLabel !== 'Submitted'
+        && this.state.submitButtonLabel !== this.submittedButtonLabel
         && this.state.submitButtonLabel !== this.abnormalSubmitButtonLabel ? 
           this.props.disabledSubmitButtonLabel 
           : this.state.submitButtonLabel} 

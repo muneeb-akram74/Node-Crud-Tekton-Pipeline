@@ -8,43 +8,31 @@ export default class Reply extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-//        newFromEmail: this.props.fromEmail,
-//        newToEmail: this.props.toEmail,
       emailIsValid: false,
       replyRequestButtonLabel: 'Reply',  
     }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClick = this.handleClick.bind(this);
     this.disabledSubmitButtonLabel = 'Waiting for formatted email';
+    this.submittedButtonLabel = 'Check your email';
+    this.payload={
+      key: this.props.getStateProperty('key'),
+    };
   }
-  handleChange(e) {
-    this.setState({
-      newFromEmail: e.target.value
-    })
-  }
-  handleClick(e) {
-    e.preventDefault();
-    async function reply() {
-      let firstData = await fetch('/email-slate-to-990/' + this.props.getStateProperty('fromEmail') + '/' + this.props.getStateProperty('toEmail'));
-      let statusJSON = firstData.json();
-      this.setState({
-        replyRequestButtonLabel: 'Submitted'
-      });
-    }
-    reply.bind(this)();
-  }
-  componentDidMount() {
-  }
+
   render() {
     return <form>
       <p>
         <label className="reply-slate-label">Reply with recallable slate with read receipt capability </label>
+        submitted:{this.state.replyRequestButtonLabel.toLocaleLowerCase().indexOf('submitted') > -1}
         <SubmitButton 
+          onceOnly={true}
+          disabled={this.state.replyRequestButtonLabel.toLocaleLowerCase().indexOf('submitted') > -1 ? 'disabled' : false}
           context="reply"
           disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
           submitButtonLabel={this.state.replyRequestButtonLabel}
-          method="GET"
-          url={'/email-slate-to-990/' + this.props.getStateProperty('toEmail') + '/' + this.props.getStateProperty('fromEmail')}
+          submittedButtonLabel={this.submittedButtonLabel}
+          method="POST"
+          payload={this.payload}
+          url={'/email-slate-to-990/'}
         />
       </p>
       <div className="hide">

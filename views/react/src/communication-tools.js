@@ -95,14 +95,13 @@ class CommunicationTools extends React.Component {
         else {
           this.setState({
             loading: false,
-            fromEmail: getData[0].fromEmail,
-            toEmail: getData[0].toEmail,
             message: getData[0].message,
             replyExists: getData[0].replyExists,
             messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
-                'Read by recipient.' : 'Not read by recipient.',
+              'Read by recipient.' : 'Not read by recipient.',
             features: features,
+            key: getData[0].key,
           });
         }
         if (this.state.hasError) {
@@ -116,8 +115,6 @@ class CommunicationTools extends React.Component {
             <ErrorBoundary>
               <Provider store={store}>
                 <Slate 
-                  fromEmail={this.state.fromEmail} 
-                  toEmail={this.state.toEmail} 
                   message={this.state.message} 
                   messageMaxLength={this.state.messageMaxLength} 
                   readStatus={this.state.readStatus} 
