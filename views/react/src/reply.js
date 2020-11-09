@@ -8,6 +8,7 @@ export default class Reply extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      onceOnly: true,
       emailIsValid: false,
       replyRequestButtonLabel: 'Reply',  
     }
@@ -22,9 +23,9 @@ export default class Reply extends React.Component {
     return <form>
       <p>
         <label className="reply-slate-label">Reply with recallable slate with read receipt capability </label>
-        submitted:{this.state.replyRequestButtonLabel.toLocaleLowerCase().indexOf('submitted') > -1}
+        {this.state.replyRequestButtonLabel.toLocaleLowerCase().indexOf('submitted') > -1}
         <SubmitButton 
-          onceOnly={true}
+          onceOnly={this.state.onceOnly}
           disabled={this.state.replyRequestButtonLabel.toLocaleLowerCase().indexOf('submitted') > -1 ? 'disabled' : false}
           context="reply"
           disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}

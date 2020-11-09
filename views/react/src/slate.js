@@ -14,6 +14,8 @@ class Slate extends React.Component {
     super(props);
     this.messageNonDirtySubmitButtonText = 'Change the message to enable submit'
     this.state = {
+        disabled: 'disabled',
+        notDisabled: false,
         message: this.props.message,
         messageDirty: false,
         messageSubmitButtonText: 'Submit message',
@@ -159,7 +161,7 @@ class Slate extends React.Component {
           <p id="readStatus">{this.props.readStatus}</p>
           <SubmitButton 
             context="slate"
-            disabled={this.state.messageDirty && this.props.submittedMessage !== this.state.message ? false : 'disabled'}
+            disabled={!this.state.messageDirty || this.props.submittedMessage == this.state.message ? this.state.disabled : this.state.notDisabled}
             disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
             submitButtonLabel={this.state.messageSubmitButtonText}
             method="PUT"

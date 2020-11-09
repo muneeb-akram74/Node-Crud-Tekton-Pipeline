@@ -7,7 +7,7 @@ import { changeMessage } from './redux/actions';
 class SubmitButton extends React.Component {
   constructor(props){
     super(props);
-    this.abnormalSubmitButtonLabel = 'Abnormal, not submitted';
+//    this.abnormalSubmitButtonLabel = 'Abnormal, not submitted';
     let submitButtonLabel = "Submit";
     let submittedButtonLabel = "Submitted";
     if(this.props.submitButtonLabel) {
@@ -17,8 +17,12 @@ class SubmitButton extends React.Component {
       submittedButtonLabel = this.props.submittedButtonLabel;
     }
     this.state = {
-      disabled: false,
+      onceOnly: this.props.onceOnly,
+      disabled: this.props.disabled,
+      disabledSubmitButtonLabel: this.props.disabledSubmitButtonLabel,
       submitButtonLabel,
+      submittedButtonLabel,
+      abnormalSubmitButtonLabel: 'Abnormal, not submitted',
     }
     this.handleClick = this.handleClick.bind(this);
   }
@@ -45,7 +49,7 @@ class SubmitButton extends React.Component {
         const firstData = await fetch(url, callParams);
         let response = await firstData.json();
         if (response.status === 'processed' || response.status.indexOf('duplicate') > -1) {
-          this.setState({ submitButtonLabel: this.props.submittedButtonLabel});
+          this.setState({ submitButtonLabel: this.state.submittedButtonLabel});
           this.props.changeMessage(document.getElementById('messageTextArea').value);
         }
         if (!this.props.onceOnly) {
@@ -77,20 +81,24 @@ class SubmitButton extends React.Component {
       console.log(error);
     }
   }
-  
+
   render() {
     return <input 
-      disabled={this.props.disabled 
-        || this.state.disabled
-        || this.props.onceOnly 
-        && this.state.submitButtonLabel === this.props.submittedButtonLabel ? 'disabled' : false} 
+      disabled={
+        this.props.disabled
+        || this.props.onceOnly
+        && this.props.context === 'reply'
+        && this.state.submitButtonLabel === this.state.submittedButtonLabel
+      } 
       type="submit" 
-      value={this.props.disabled
-        && this.state.submitButtonLabel !== this.submittedButtonLabel
-        && this.state.submitButtonLabel !== this.abnormalSubmitButtonLabel ? 
-          this.props.disabledSubmitButtonLabel 
-          : this.state.submitButtonLabel} 
       onClick={this.handleClick}
+      value={
+        this.props.disabled
+        && this.state.submitButtonLabel !== this.state.submittedButtonLabel
+        && this.state.submitButtonLabel !== this.state.abnormalSubmitButtonLabel ? 
+        this.state.disabledSubmitButtonLabel 
+           : this.state.submitButtonLabel
+       } 
     />
   }
 }
