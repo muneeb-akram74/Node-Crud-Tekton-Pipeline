@@ -18,11 +18,18 @@ class SubmitButton extends React.Component {
     }
     this.state = {
       onceOnly: this.props.onceOnly,
-      disabled: this.props.disabled,
+      disabled: false,
       disabledSubmitButtonLabel: this.props.disabledSubmitButtonLabel,
+      duplicateSubmission: false,
       submitButtonLabel,
       submittedButtonLabel,
+      duplicateSubmitButtonLabel: 'Already requested',
       abnormalSubmitButtonLabel: 'Abnormal, not submitted',
+    }
+    if (this.props.disabled === true) {
+      this.setState({
+        disabled: true,
+      })
     }
     this.handleClick = this.handleClick.bind(this);
   }
@@ -30,7 +37,7 @@ class SubmitButton extends React.Component {
   handleClick(e) {
     e.preventDefault(0);
     let sendData = async function (url = '', data = {}, resolve, reject) {
-      this.setState({ submitButtonLabel: 'Submitting'});
+      this.setState({ submitButtonLabel: 'Submitting' });
       let callParams = {
         method: this.props.method,
         mode: 'cors',
@@ -48,14 +55,46 @@ class SubmitButton extends React.Component {
       try {
         const firstData = await fetch(url, callParams);
         let response = await firstData.json();
-        if (response.status === 'processed' || response.status.indexOf('duplicate') > -1) {
-          this.setState({ submitButtonLabel: this.state.submittedButtonLabel});
+        if (
+          this.props.context == 'register-me'
+          && response.status.indexOf('duplicate') > -1
+        ) {
+          this.setState({ submitButtonLabel: this.state.duplicateSubmitButtonLabel });
+          setTimeout(()=>{
+            this.setState({ submitButtonLabel: this.props.submitButtonLabel});
+          }, 3000);
+        }
+        if (response.status === 'processed' || 
+          this.props.context !== 'register-me' 
+          && response.status.indexOf('duplicate') > -1
+        ) {
+          this.setState({
+            submitButtonLabel: this.state.submittedButtonLabel 
+          });
           this.props.changeMessage(document.getElementById('messageTextArea').value);
         }
         if (!this.props.onceOnly) {
           setTimeout(()=>{
             this.setState({ submitButtonLabel: this.props.submitButtonLabel});
           }, 3000);
+        }
+        else if (
+          this.props.onceOnly
+        ){
+          if (response.status === 'processed') {
+            this.setState({
+              disabled: true,
+              submitButtonLabel: this.state.submittedButtonLabel 
+            });
+          }
+          else {
+            this.setState({
+              submitButtonLabel: this.state.duplicateSubmitButtonLabel 
+            });
+            setTimeout(()=>{
+              this.setState({ submitButtonLabel: this.props.submitButtonLabel});
+            }, 3000);
+          }
         }
       }
       catch(err) {
@@ -86,6 +125,7 @@ class SubmitButton extends React.Component {
     return <input 
       disabled={
         this.props.disabled
+        || this.state.disabled
         || this.props.onceOnly
         && this.props.context === 'reply'
         && this.state.submitButtonLabel === this.state.submittedButtonLabel
@@ -93,11 +133,12 @@ class SubmitButton extends React.Component {
       type="submit" 
       onClick={this.handleClick}
       value={
-        this.props.disabled
+        this.props.value
+        || (this.props.disabled
         && this.state.submitButtonLabel !== this.state.submittedButtonLabel
         && this.state.submitButtonLabel !== this.state.abnormalSubmitButtonLabel ? 
         this.state.disabledSubmitButtonLabel 
-           : this.state.submitButtonLabel
+           : this.state.submitButtonLabel)
        } 
     />
   }

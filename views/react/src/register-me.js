@@ -1,5 +1,6 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import SubmitButton from './submit-button';
 
 'use strict';
 
@@ -8,14 +9,23 @@ export default class RegisterMe extends React.Component {
 		super(props);
 		this.state = {
 		    email: '',
-		    emailIsValid: false
+		    emailIsValid: false,
+		    payload: {
+		      fromEmail: ''
+		    },
+		    onceOnly: true,
+		    submittedButtonLabel: 'Check your email',
 		}
 		this.handleChange = this.handleChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 	}
 	handleChange(e) {
 	  this.setState({
-	    email: e.target.value
+	    email: e.target.value,
+	    emailIsValid: /(.*)@(.+)\.(.+)/.test(this.state.email),
+	    payload: {
+	      fromEmail: e.target.value
+	    }
 	  })
 	}
 	handleClick(e) {
@@ -37,9 +47,21 @@ export default class RegisterMe extends React.Component {
 			<div className="slate-requestor-email-form">
 			  <input onChange={this.handleChange}/>
 			</div>
-			<div className="submit-slate-request">
+			<div className="hide submit-slate-request">
 			  <input onClick={(e) => this.handleClick(e)} type="submit" disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true} value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}/>
 			</div>
+        <SubmitButton 
+          onceOnly={this.state.onceOnly}
+          disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true}
+          emailIsValid={this.state.emailIsValid}
+          value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}
+          context="register-me"
+          disabledSubmitButtonLabel={this.state.disabledSubmitButtonLabel}
+          submittedButtonLabel={this.state.submittedButtonLabel}
+          method="POST"
+          payload={this.state.payload}
+          url={'/email-slate/'}
+        />
 		</form>;
 	}
 }

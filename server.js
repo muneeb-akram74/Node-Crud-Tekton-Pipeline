@@ -299,41 +299,42 @@ app.get('/email-95050', function (req, res) {
   res.send({"status": "processed"});
 });
 
-app.get('/email-slate/:fromEmail', function(req, res) {
+app.post('/email-slate', function(req, res) {
+  filteredFromEmailFromPayload = filterInput(req.body.fromEmail);
   // Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
   // How about including email and tracking attempts?
-  if (!/(.*)@(.+)\.(.+)/.test(req.params.fromEmail)) {
+  if (!/(.*)@(.+)\.(.+)/.test(filteredFromEmailFromPayload)) {
     res.send({"status": "malformed email"});
     return;
   }
   let slates = db.collection('slates');
   let cursor = slates.find({
-    "fromEmail": req.params.fromEmail,
+    "fromEmail": filteredFromEmailFromPayload,
     "toEmail": selectedFromEmail
   });
   async function checkEmailDuplication() {
     emailArray = await cursor.toArray();
     if(emailArray.length === 0) {
-      let key = req.params.fromEmail + '-' + generateKey(15);
+      let key = filteredFromEmailFromPayload + '-' + generateKey(15);
       let senderKey = generateKey(3);
       slates.insertOne({
         ip: req.ip, 
         date: Date.now(), 
-        fromEmail: req.params.fromEmail,
-        toEmail: 'ashaw85@hotmail.com',
+        fromEmail: filteredFromEmailFromPayload,
+        toEmail: selectedFromEmail,
         key: key, 
         message: 'Hi.', 
         senderKey: senderKey
       });
-      mail(req.params.fromEmail, selectedFromEmail, 'Your slate', 
+      mail(filteredFromEmailFromPayload, selectedFromEmail, 'Your slate', 
           `To see your slate, copy and paste http://${req.headers.host}/react/slate/${key}/${senderKey} into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`,
           `To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}/${senderKey}">http://${req.headers.host}/react/slate/${key}/${senderKey}</a> into your browser's address field. The issuer will be emailed a recipient version that tracks read status.`
           );
 
       mail(selectedFromEmail, selectedFromEmail, 'Your slate', 
-          `You have received a slate from ${req.params.fromEmail}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
-          `You have received a slate from <a href="mailto:${req.params.fromEmail}">${req.params.fromEmail}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
+          `You have received a slate from ${filteredFromEmailFromPayload}. To see your slate, copy and paste http://${req.headers.host}/react/slate/${key} into your browser's address field.`,
+          `You have received a slate from <a href="mailto:${filteredFromEmailFromPayload}">${filteredFromEmailFromPayload}</a>. To see your slate, click or copy and paste <a href="http://${req.headers.host}/react/slate/${key}">http://${req.headers.host}/react/slate/${key}</a> into your browser's address field.`
           );
       
       res.send({"status": "processed"});
