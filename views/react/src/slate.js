@@ -153,42 +153,44 @@ class Slate extends React.Component {
       key: location.href.match(/slate\/(.*?)\//)[1],
       senderKey,
     };
-    return <div id="slate" className="row">
-      <div className="col-sm-6">
-        <form id="messageForm">
-          <div><label>Message:</label></div>
-          <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={this.state.message} onChange={this.onMessageChange}></textarea>
-          <p id="readStatus">{this.props.readStatus}</p>
-          <SubmitButton 
-            context="slate"
-            disabled={!this.state.messageDirty || this.props.submittedMessage == this.state.message ? this.state.disabled : this.state.notDisabled}
-            disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
-            submitButtonLabel={this.state.messageSubmitButtonText}
-            method="PUT"
-            url={"/slate/put/"}
-            payload={payload}
-          />
-        </form>
-      </div>
-      <div className="col-sm-6">
-        {replyFeatureOn
-          && !(location.href.match(/slate\/(.*?)\//)[1] === '123')
-          && !this.props.replyExists ? 
-            <Reply getStateProperty={this.props.getStateProperty} /> : ''}
-        {!replyFeatureOn 
-          && location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
-      </div>
-      <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
-        <h5>Privacy Notice</h5>
-        <p>
-          If you provide your email, this site collects your email to provide the service and notify of changes in the service that may affect you.
-        </p>
-        <div>
-          <button onClick={this.handlePrivacyNoticeClose}>Close</button>
+    return <div id="slate">
+      <div><label>Message:</label></div>
+      <div id="slateRow1" className="row">
+        <div className="col-sm-6">
+          <form id="messageForm">
+            <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={this.state.message} onChange={this.onMessageChange}></textarea>
+            <p id="readStatus">{this.props.readStatus}</p>
+            <SubmitButton 
+              context="slate"
+              disabled={!this.state.messageDirty || this.props.submittedMessage == this.state.message ? this.state.disabled : this.state.notDisabled}
+              disabledSubmitButtonLabel={this.messageNonDirtySubmitButtonText}
+              submitButtonLabel={this.state.messageSubmitButtonText}
+              method="PUT"
+              url={"/slate/put/"}
+              payload={payload}
+            />
+          </form>
         </div>
-      </div>
-      <div className="col-sm-12">
-        <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
+        <div className="col-sm-6">
+          {replyFeatureOn
+            && !(location.href.match(/slate\/(.*?)\//)[1] === '123')
+            && !this.props.replyExists ? 
+              <Reply getStateProperty={this.props.getStateProperty} /> : ''}
+          {!replyFeatureOn 
+            && location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+        </div>
+        <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
+          <h5>Privacy Notice</h5>
+          <p>
+            If you provide your email, this site collects your email to provide the service and notify of changes in the service that may affect you.
+          </p>
+          <div>
+            <button onClick={this.handlePrivacyNoticeClose}>Close</button>
+          </div>
+        </div>
+        <div className="col-sm-12">
+          <button onClick={this.handlePrivacyNoticeOpen}>Open Privacy Notice</button>
+        </div>
       </div>
     </div>
   }
