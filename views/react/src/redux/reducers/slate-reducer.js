@@ -1,5 +1,6 @@
 const initialState = {
-  submittedMessage: '[unsubmitted]'
+  submittedMessage: '[unsubmitted]',
+  submittedState: false,
 };
 
 export default (state = initialState, action) => {
@@ -8,6 +9,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         submittedMessage: action.payload.content
+      }
+    }
+    case 'CHANGE_SUBMITTED_STATE': {
+      return {
+        ...state,
+        submittedState: action.payload.submittedState
       }
     }
     default:

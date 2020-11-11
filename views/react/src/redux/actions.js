@@ -6,3 +6,12 @@ export const changeMessage = content => {
     }
   });
 }
+
+export const changeSubmittedState = submittedState => {
+  return ({
+    type: "CHANGE_SUBMITTED_STATE",
+    payload: {
+      submittedState
+    }
+  })
+}

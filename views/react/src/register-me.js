@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import SubmitButton from './submit-button';
+import store from './redux/store';
+import { getSubmittedState } from './redux/selectors'
+import { connect } from 'react-redux';
 
 'use strict';
 
-export default class RegisterMe extends React.Component {
+class RegisterMe extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -37,8 +40,6 @@ export default class RegisterMe extends React.Component {
 		}
 		registerMe.bind(this)();
 	}
-	componentDidMount() {
-	}
 	render() {
 		return <form className="register-me">
 			<p>Looks good, please email me a recallable, read receipted Slate to message Andrew:
@@ -52,9 +53,19 @@ export default class RegisterMe extends React.Component {
 			</div>
         <SubmitButton 
           onceOnly={this.state.onceOnly}
-          disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true}
+          disabled={
+            !/(.*)@(.+)\.(.+)/.test(this.state.email) 
+            || this.props.submittedState
+            || !this.props.submittedState === 'alreadySubmitted' ? true : false}
           emailIsValid={this.state.emailIsValid}
-          value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}
+          value={
+            this.props.submittedState === 'alreadySubmitted' ?
+              'Already submitted, check email'
+              : this.props.submittedState ?
+                'Submitted, check email'
+                : /(.*)@(.+)\.(.+)/.test(this.state.email) ? 
+                  'Submit' 
+                  : 'Waiting for formatted email'}
           context="register-me"
           disabledSubmitButtonLabel={this.state.disabledSubmitButtonLabel}
           submittedButtonLabel={this.state.submittedButtonLabel}
@@ -65,3 +76,10 @@ export default class RegisterMe extends React.Component {
 		</form>;
 	}
 }
+
+const mapStateToProps = store => {
+  const submittedState = getSubmittedState(store);
+  return { submittedState };
+}
+
+export default connect(mapStateToProps)(RegisterMe)

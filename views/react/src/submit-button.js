@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import { changeMessage } from './redux/actions';
+import { 
+  changeMessage,
+  changeSubmittedState,
+} from './redux/actions';
 
 'use strict';
 
@@ -26,12 +29,16 @@ class SubmitButton extends React.Component {
       duplicateSubmitButtonLabel: 'Already requested',
       abnormalSubmitButtonLabel: 'Abnormal, not submitted',
     }
-    if (this.props.disabled === true) {
-      this.setState({
-        disabled: true,
-      })
-    }
+//    if (this.props.disabled === true) {
+//      this.setState({
+//        disabled: true,
+//      })
+//    }
     this.handleClick = this.handleClick.bind(this);
+  }
+  
+  componentDidMount() {
+    this.props.changeSubmittedState(false);
   }
 
   handleClick(e) {
@@ -86,8 +93,10 @@ class SubmitButton extends React.Component {
               disabled: true,
               submitButtonLabel: this.state.submittedButtonLabel 
             });
+            this.props.changeSubmittedState(true);
           }
           else {
+            this.props.changeSubmittedState('alreadySubmitted');
             this.setState({
               submitButtonLabel: this.state.duplicateSubmitButtonLabel 
             });
@@ -125,20 +134,19 @@ class SubmitButton extends React.Component {
     return <input 
       disabled={
         this.props.disabled
-        || this.state.disabled
-        || this.props.onceOnly
+        || this.state.onceOnly
         && this.props.context === 'reply'
         && this.state.submitButtonLabel === this.state.submittedButtonLabel
       } 
       type="submit" 
       onClick={this.handleClick}
       value={
-        this.props.value
-        || (this.props.disabled
-        && this.state.submitButtonLabel !== this.state.submittedButtonLabel
-        && this.state.submitButtonLabel !== this.state.abnormalSubmitButtonLabel ? 
-        this.state.disabledSubmitButtonLabel 
-           : this.state.submitButtonLabel)
+          this.props.value
+          || (!this.props.emailIsValid
+          && this.state.submitButtonLabel !== this.state.submittedButtonLabel
+          && this.state.submitButtonLabel !== this.state.abnormalSubmitButtonLabel ? 
+            this.state.disabledSubmitButtonLabel 
+            : this.state.submitButtonLabel)
        } 
     />
   }
@@ -146,5 +154,8 @@ class SubmitButton extends React.Component {
 
 export default connect(
   null,
-  { changeMessage }
+  { 
+    changeMessage,
+    changeSubmittedState,
+  }
 )(SubmitButton);
