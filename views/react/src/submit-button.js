@@ -142,7 +142,7 @@ class SubmitButton extends React.Component {
       onClick={this.handleClick}
       value={
           this.props.value
-          || (!this.props.emailIsValid
+          || ( this.props.disabled 
           && this.state.submitButtonLabel !== this.state.submittedButtonLabel
           && this.state.submitButtonLabel !== this.state.abnormalSubmitButtonLabel ? 
             this.state.disabledSubmitButtonLabel 
