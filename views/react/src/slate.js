@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+//import ReactDOM from 'react-dom';
 import RegisterMe from './register-me';
 import Reply from './reply';
 import SubmitButton from './submit-button';
@@ -129,6 +129,10 @@ class Slate extends React.Component {
     })
     this.state.messageSubmitButtonText = this.state.messageNonDirtySubmitButtonText;
   }
+
+  onSubmit(token) {
+    document.getElementById("demo-form").submit();
+  }
   
   render() {
     let senderKey;
@@ -159,7 +163,12 @@ class Slate extends React.Component {
         <div className="col-sm-6">
           <form id="messageForm">
             <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={this.state.message} onChange={this.onMessageChange}></textarea>
-            <p id="readStatus">{this.props.readStatus}</p>
+            <p id="readStatus">
+              <span className="book-icons">
+                {this.props.readStatus.indexOf('Not') > -1 && <i className="fas fa-book"></i>}
+                {this.props.readStatus.indexOf('Not') < 0 && <i className="fab fa-readme"></i>}
+              </span>{this.props.readStatus}
+            </p>
             <SubmitButton 
               context="slate"
               disabled={!this.state.messageDirty || this.props.submittedMessage == this.state.message ? this.state.disabled : this.state.notDisabled}
@@ -169,6 +178,10 @@ class Slate extends React.Component {
               url={"/slate/put/"}
               payload={payload}
             />
+            <button className="hide g-recaptcha" 
+            data-sitekey="reCAPTCHA_site_key" 
+            data-callback='onSubmit' 
+            data-action='submit'>Submit</button>
           </form>
         </div>
         <div className="col-sm-6">

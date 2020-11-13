@@ -7188,6 +7188,9 @@ span.light {
 .slate-requestor-email-form {
   margin-bottom: 1rem; }
 
+#readStatus .book-icons {
+  margin-right: 0.5rem; }
+
 #privacyModal {
   top: unset;
   height: unset;
