@@ -15,6 +15,9 @@ var express = require('express'),
     morgan  = require('morgan'),
     url     = require('url');
 var prodHost = 'https://slate-central.herokuapp';
+var generateKey = require('./generateKey');
+var fs = require('fs');
+const api_helper = require('./API_helper');
 
 var generateKey = require('./generateKey');
 var sendGridAllowedFromEmails = [
@@ -134,6 +137,16 @@ var initDb = function(callback) {
   });
   //});
 };
+
+app.get('/getAPIResponse', (req, res) => {
+  api_helper.make_API_call('https://jsonplaceholder.typicode.com/todos/1')
+  .then(response => {
+      res.json(response)
+  })
+  .catch(error => {
+      res.send(error)
+  })
+})
 
 app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already

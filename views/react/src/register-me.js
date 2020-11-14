@@ -73,6 +73,7 @@ class RegisterMe extends React.Component {
           payload={this.state.payload}
           url={'/email-slate/'}
         />
+        <div className="hide g-recaptcha" data-sitekey="6LeplO0SAAAAACbFro3_bgtb3GlmnODWYjXwopGS"></div>
 		</form>;
 	}
 }
