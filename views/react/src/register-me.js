@@ -41,7 +41,7 @@ class RegisterMe extends React.Component {
 		registerMe.bind(this)();
 	}
 	render() {
-		return <form className="register-me">
+		return <form className="register-me" action="?" method="POST">
 			<p>Looks good, please email me a recallable, read receipted Slate to message Andrew:
 			  <label></label>
 			</p>
@@ -74,6 +74,10 @@ class RegisterMe extends React.Component {
           url={'/email-slate/'}
         />
         <div className="hide g-recaptcha" data-sitekey="6LeplO0SAAAAACbFro3_bgtb3GlmnODWYjXwopGS"></div>
+        <br/>
+        <div className="hide">
+          <input type="submit" value="Submit"></input>
+        </div>
 		</form>;
 	}
 }

@@ -178,10 +178,6 @@ class Slate extends React.Component {
               url={"/slate/put/"}
               payload={payload}
             />
-            <button className="hide g-recaptcha" 
-            data-sitekey="reCAPTCHA_site_key" 
-            data-callback='onSubmit' 
-            data-action='submit'>Submit</button>
           </form>
         </div>
         <div className="col-sm-6">
