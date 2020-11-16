@@ -14,20 +14,30 @@ class RegisterMe extends React.Component {
 		    email: '',
 		    emailIsValid: false,
 		    payload: {
-		      fromEmail: ''
+		      fromEmail: '',
+		      captcha: '',
 		    },
 		    onceOnly: true,
 		    submittedButtonLabel: 'Check your email',
+		    backEndCaptchaEnabled: this.props.backEndCaptchaEnabled,
 		}
 		this.handleChange = this.handleChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 	}
 	handleChange(e) {
+	  let captcha;
+	  if (typeof grecaptcha === 'undefined') {
+	    captcha = '';
+	  }
+	  else {
+	    captcha = grecaptcha.getResponse();
+	  }
 	  this.setState({
 	    email: e.target.value,
 	    emailIsValid: /(.*)@(.+)\.(.+)/.test(this.state.email),
 	    payload: {
-	      fromEmail: e.target.value
+	      fromEmail: e.target.value,
+	      captcha,
 	    }
 	  })
 	}
@@ -40,6 +50,13 @@ class RegisterMe extends React.Component {
 		}
 		registerMe.bind(this)();
 	}
+	componentDidMount() {
+    if (this.props.backEndCaptchaEnabled && showCaptcha) {
+      this.setState({
+        showCaptcha: true
+      });
+    }
+	}
 	render() {
 		return <form className="register-me" action="?" method="POST">
 			<p>Looks good, please email me a recallable, read receipted Slate to message Andrew:
@@ -51,10 +68,19 @@ class RegisterMe extends React.Component {
 			<div className="hide submit-slate-request">
 			  <input onClick={(e) => this.handleClick(e)} type="submit" disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true} value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}/>
 			</div>
+        {
+          this.state.backEndCaptchaEnabled
+          && <div className="g-recaptcha-wrapper">
+            <div className="g-recaptcha" data-sitekey="6LeplO0SAAAAACbFro3_bgtb3GlmnODWYjXwopGS"></div> 
+            <br/>
+          </div>
+        }
         <SubmitButton 
           onceOnly={this.state.onceOnly}
           disabled={
             !/(.*)@(.+)\.(.+)/.test(this.state.email) 
+            || this.state.showCaptcha
+              && this.state.payload.captcha === ''
             || this.props.submittedState
             || !this.props.submittedState === 'alreadySubmitted' ? true : false}
           emailIsValid={this.state.emailIsValid}
@@ -63,9 +89,12 @@ class RegisterMe extends React.Component {
               'Already submitted, check email'
               : this.props.submittedState ?
                 'Submitted, check email'
-                : /(.*)@(.+)\.(.+)/.test(this.state.email) ? 
-                  'Submit' 
-                  : 'Waiting for formatted email'}
+                : !/(.*)@(.+)\.(.+)/.test(this.state.email) ? 
+                  'Waiting for formatted email'
+                  : this.state.showCaptcha
+                    && this.state.payload.captcha === '' ?
+                      'Please check reCAPTCHA'
+                      : 'Submit'}
           context="register-me"
           disabledSubmitButtonLabel={this.state.disabledSubmitButtonLabel}
           submittedButtonLabel={this.state.submittedButtonLabel}
@@ -73,8 +102,6 @@ class RegisterMe extends React.Component {
           payload={this.state.payload}
           url={'/email-slate/'}
         />
-        <div className="hide g-recaptcha" data-sitekey="6LeplO0SAAAAACbFro3_bgtb3GlmnODWYjXwopGS"></div>
-        <br/>
         <div className="hide">
           <input type="submit" value="Submit"></input>
         </div>

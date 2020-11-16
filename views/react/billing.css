@@ -7217,3 +7217,6 @@ span.light {
 
 .slate-requestor-email-field {
   margin-bottom: 1rem; }
+
+.g-recaptcha-wrapper {
+  line-height: 0; }

@@ -27,6 +27,7 @@ var sendGridAllowedFromEmails = [
 ];
 //outlook.com and hotmail.com emails cannot receive SendGrid mails
 var selectedFromEmail = sendGridAllowedFromEmails[2];
+let backEndCaptchaEnabled = true;
 
 require('./chat-server')();
 Object.assign=require('object-assign')
@@ -312,7 +313,50 @@ app.get('/email-95050', function (req, res) {
   res.send({"status": "processed"});
 });
 
-app.post('/email-slate', function(req, res) {
+app.post('/email-slate', async function(req, res) {
+  let features = db.collection('features');
+  features.find({}).toArray().then(featuresArray => {
+    backEndCaptchaEnabled = featuresArray[0].backEndCaptchaEnabled === "true"
+      || featuresArray[0].backEndCaptchaEnabled;
+  });
+ 
+  const filteredCaptchaFromPayload = req.body.hasOwnProperty('captcha') && filterInput(req.body.captcha);
+  if (filteredCaptchaFromPayload === false) {
+    // not enforced during early stages
+    if (backEndCaptchaEnabled) {
+      res.status(406).send({"status":"Need captcha"});
+    }
+    console.log("406: error verifying captcha, need captcha");
+  }
+  else {
+    try {
+      let googleRes = await api_helper.make_API_call(
+        'https://www.google.com/recaptcha/api/siteverify',
+        {
+          secret: '6LcvB-MZAAAAABmyS5iRYLFQaLKC_kqKL48yYmCV',
+          response: filteredCaptchaFromPayload,
+        }
+      )
+      if (googleRes.success === false) {
+        let errors;
+        if (googleRes.hasOwnProperty('error-codes')) {
+          errors = googleRes['error-codes'].reduce((acc, currValue) => acc + ', ' + currValue)
+        }
+        if (backEndCaptchaEnabled) {
+          res.status(406).send({
+            "status": "406: error verifying captcha, "+errors,
+          });
+        }
+        console.log("406: error verifying captcha, "+errors);
+      }
+    }
+    catch(err) {
+      if (backEndCaptchaEnabled) {
+        res.status(406).send({"status": err});
+      }
+      console.log('status:'+err);
+    }
+  }
   filteredFromEmailFromPayload = filterInput(req.body.fromEmail);
   // Plan to have user request, not directly to putxx, generate and email key with user email
   // Plan is to have keys as [recipientEmail][senderEmail][uniqueCode]/[senderKey]
@@ -490,6 +534,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
     let slates = db.collection('slates'),
         criteria, 
         cursor;
+//    let features = db.collection('features');
     
     /* start demo and starter key exists */
     /* Uncomment check demo and starter key exists when first loading onto a new hosting service */ 
@@ -546,6 +591,17 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
       cursor.toArray().then((data)=>{
         let replyFromEmail = '';
         let replyToEmail = ''
+
+        let features = db.collection('features');
+        features.find({}).toArray().then(featuresArray => {
+          backEndCaptchaEnabled = typeof featuresArray[0] !== 'undefined' 
+            && (featuresArray[0].backEndCaptchaEnabled === "true"
+              || featuresArray[0].backEndCaptchaEnabled 
+//              || ( featuresArray[0].backEndCaptchaEnabled.isArray() 
+//                && featuresArray[0].backEndCaptchaEnabled.indexOf(data[0].key) > -1 )
+            );
+        });
+
         if (data.length > 0) {
           replyFromEmail = data[0].toEmail;
           replyToEmail = data[0].fromEmail;
@@ -593,6 +649,7 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
           delete data[0].senderKey;
           delete data[0].toEmail;
           delete data[0].fromEmail;
+          data[0].backEndCaptchaEnabled = backEndCaptchaEnabled;
           async function replyExists() {
             return await checkExistenceReply();
           }

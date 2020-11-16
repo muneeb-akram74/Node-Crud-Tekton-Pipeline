@@ -182,11 +182,14 @@ class Slate extends React.Component {
         </div>
         <div className="col-sm-6">
           {replyFeatureOn
-            && !(location.href.match(/slate\/(.*?)\//)[1] === '123')
+            && ( !(location.href.match(/slate\/(.*?)\//)[1] === '123')
+              || !(location.href.match(/slate\/(.*?)\//)[1] === '124') )
             && !this.props.replyExists ? 
               <Reply getStateProperty={this.props.getStateProperty} /> : ''}
           {!replyFeatureOn 
-            && location.href.match(/slate\/(.*?)\//)[1] === '123' ? <RegisterMe /> : ''}
+            && ( location.href.match(/slate\/(.*?)\//)[1] === '123' 
+              || location.href.match(/slate\/(.*?)\//)[1] === '124' )
+              ? <RegisterMe backEndCaptchaEnabled={this.props.backEndCaptchaEnabled}/> : ''}
         </div>
         <div className={"container-fluid privacy-notice " + (this.state.showPrivacyNotice ? "" : "hide")}>
           <h5>Privacy Notice</h5>

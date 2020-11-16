@@ -93,6 +93,8 @@ class CommunicationTools extends React.Component {
           });
         }
         else {
+          let backEndCaptchaEnabled = getData[0].backEndCaptchaEnabled === "true"
+            || getData[0].backEndCaptchaEnabled
           this.setState({
             loading: false,
             message: getData[0].message,
@@ -100,8 +102,9 @@ class CommunicationTools extends React.Component {
             messageMaxLength: getData[0].key == '123' ? 3 : 300,
             readStatus: getData[0].viewedTime > getData[0].updateTime ? 
               'Read by recipient.' : 'Not read by recipient.',
-            features: features,
+            features,
             key: getData[0].key,
+            backEndCaptchaEnabled,
           });
         }
         if (this.state.hasError) {
@@ -121,6 +124,7 @@ class CommunicationTools extends React.Component {
                   replyExists={this.state.replyExists} 
                   getStateProperty={this.getStateProperty.bind(this)}
                   features={this.state.features}
+                  backEndCaptchaEnabled={this.state.backEndCaptchaEnabled}
                 />
               </Provider>
             </ErrorBoundary>, 
