@@ -95,6 +95,14 @@ class SubmitButton extends React.Component {
             });
             this.props.changeSubmittedState(true);
           }
+          if (response.status.indexOf('missing-input-response') > -1) {
+            this.setState({
+              submitButtonLabel: 'Missing Captcha'
+            });
+            setTimeout(()=>{
+              this.setState({ submitButtonLabel: this.props.submitButtonLabel});
+            }, 3000);
+          }
           else {
             this.props.changeSubmittedState('alreadySubmitted');
             this.setState({

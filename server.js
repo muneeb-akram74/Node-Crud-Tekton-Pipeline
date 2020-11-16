@@ -330,24 +330,42 @@ app.post('/email-slate', async function(req, res) {
   }
   else {
     try {
-      let googleRes = await api_helper.make_API_call(
-        'https://www.google.com/recaptcha/api/siteverify',
-        {
-          secret: '6LcvB-MZAAAAABmyS5iRYLFQaLKC_kqKL48yYmCV',
-          response: filteredCaptchaFromPayload,
-        }
-      )
-      if (googleRes.success === false) {
+      SECRET_KEY='6LcvB-MZAAAAABmyS5iRYLFQaLKC_kqKL48yYmCV';
+      host = 'www.google.com';
+      path = '/recaptcha/api/siteverify';
+      port = 80;
+      postData = captchaPayload = 
+      JSON.stringify({
+        secret: SECRET_KEY,
+        response: filteredCaptchaFromPayload,
+//        response: 'y',
+      });
+      postData = `secret=${SECRET_KEY}&response=${filteredCaptchaFromPayload}`;
+      method = 'POST';
+      
+//      let googleRes = await api_helper.make_API_call(
+//        'https://www.google.com/recaptcha/api/siteverify',
+//        {
+//          secret: '6LcvB-MZAAAAABmyS5iRYLFQaLKC_kqKL48yYmCV',
+//          response: filteredCaptchaFromPayload,
+//        },
+//        'POST',
+//      )
+      
+      const googleRes = await api_helper.make_http_call(host, path, port, postData, method);
+      const parsedGoogleRes = JSON.parse(googleRes.toString());
+      if (parsedGoogleRes.success === false) {
         let errors;
-        if (googleRes.hasOwnProperty('error-codes')) {
-          errors = googleRes['error-codes'].reduce((acc, currValue) => acc + ', ' + currValue)
+        if (parsedGoogleRes.hasOwnProperty('error-codes')) {
+          errors = parsedGoogleRes['error-codes'].reduce((acc, currValue) => acc + ', ' + currValue)
         }
         if (backEndCaptchaEnabled) {
           res.status(406).send({
-            "status": "406: error verifying captcha, "+errors,
+            "status": errors,
           });
+          return;
         }
-        console.log("406: error verifying captcha, "+errors);
+        console.log(errors);
       }
     }
     catch(err) {
@@ -592,16 +610,6 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
         let replyFromEmail = '';
         let replyToEmail = ''
 
-        let features = db.collection('features');
-        features.find({}).toArray().then(featuresArray => {
-          backEndCaptchaEnabled = typeof featuresArray[0] !== 'undefined' 
-            && (featuresArray[0].backEndCaptchaEnabled === "true"
-              || featuresArray[0].backEndCaptchaEnabled 
-//              || ( featuresArray[0].backEndCaptchaEnabled.isArray() 
-//                && featuresArray[0].backEndCaptchaEnabled.indexOf(data[0].key) > -1 )
-            );
-        });
-
         if (data.length > 0) {
           replyFromEmail = data[0].toEmail;
           replyToEmail = data[0].fromEmail;
@@ -649,19 +657,31 @@ app.get('/slate/get/:key/:senderKey?', async function(req, res) {
           delete data[0].senderKey;
           delete data[0].toEmail;
           delete data[0].fromEmail;
-          data[0].backEndCaptchaEnabled = backEndCaptchaEnabled;
-          async function replyExists() {
-            return await checkExistenceReply();
-          }
-          checkExistenceReply().then(replyExists => {
-            try {
-              data[0].replyExists = replyExists;
-              res.send(JSON.stringify(data));
+
+          let features = db.collection('features');
+          features.find({}).toArray().then(featuresArray => {
+            backEndCaptchaEnabled = typeof featuresArray[0] !== 'undefined' 
+              && (featuresArray[0].backEndCaptchaEnabled === "true"
+                || featuresArray[0].backEndCaptchaEnabled === true
+                || ( Array.isArray(featuresArray[0].backEndCaptchaEnabled) 
+                  && featuresArray[0].backEndCaptchaEnabled.map(el=>el.toString()).indexOf(data[0].key) > -1 )
+              );
+
+            data[0].backEndCaptchaEnabled = backEndCaptchaEnabled;
+            async function replyExists() {
+              return await checkExistenceReply();
             }
-            catch {
-              res.send({"result": "error"});
-            }
+            checkExistenceReply().then(replyExists => {
+              try {
+                data[0].replyExists = replyExists;
+                res.send(JSON.stringify(data));
+              }
+              catch {
+                res.send({"result": "error"});
+              }
+            });
           });
+
         }
       },
       (err)=>{

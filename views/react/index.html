@@ -29,7 +29,6 @@
     <link rel="icon" type="image/x-icon" href="/react/slate/favicon.ico">
     <script src="https://kit.fontawesome.com/2ba5ed9527.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
-    	var showCaptcha = false;
       var onloadCallback = function() {
         const maxWait = 14000;
         intervalGRecaptcha = setInterval(()=>{
@@ -41,18 +40,6 @@
           }
         }, 500)
       };
-      if (
-        !(location.href.indexOf('showCaptcha=false') > -1)
-        && location.href.indexOf('showCaptcha') > -1
-      ) {
-        showCaptcha = true;
-      }
-      if (showCaptcha) {
-        googleRecaptchaLauncherEl = document.createElement('SCRIPT');
-        googleRecaptchaLauncherEl.src = "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit";
-        googleRecaptchaLauncherEl.defer = true;
-        document.head.appendChild(googleRecaptchaLauncherEl);
-      }
     </script>
     <!-- 
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>

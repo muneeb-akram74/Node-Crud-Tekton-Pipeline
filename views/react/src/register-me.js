@@ -51,10 +51,14 @@ class RegisterMe extends React.Component {
 		registerMe.bind(this)();
 	}
 	componentDidMount() {
-    if (this.props.backEndCaptchaEnabled && showCaptcha) {
+    if (this.props.backEndCaptchaEnabled) {
       this.setState({
         showCaptcha: true
       });
+      let googleRecaptchaLauncherEl = document.createElement('SCRIPT');
+      googleRecaptchaLauncherEl.src = "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit";
+      googleRecaptchaLauncherEl.defer = true;
+      document.head.appendChild(googleRecaptchaLauncherEl);
     }
 	}
 	render() {
@@ -69,7 +73,7 @@ class RegisterMe extends React.Component {
 			  <input onClick={(e) => this.handleClick(e)} type="submit" disabled={/(.*)@(.+)\.(.+)/.test(this.state.email) ? false : true} value={/(.*)@(.+)\.(.+)/.test(this.state.email) ? 'Submit' : 'Waiting for formatted email'}/>
 			</div>
         {
-          this.state.backEndCaptchaEnabled
+          this.state.showCaptcha
           && <div className="g-recaptcha-wrapper">
             <div className="g-recaptcha" data-sitekey="6LeplO0SAAAAACbFro3_bgtb3GlmnODWYjXwopGS"></div> 
             <br/>
