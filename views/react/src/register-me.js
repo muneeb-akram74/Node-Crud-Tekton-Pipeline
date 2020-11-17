@@ -69,6 +69,7 @@ class RegisterMe extends React.Component {
     if (grecaptcha.getResponse() !== '') {
       this.setState({
         payload: {
+          ...this.state.payload,
           captcha: grecaptcha.getResponse(),
         }
       });
