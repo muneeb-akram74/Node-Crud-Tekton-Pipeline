@@ -59,7 +59,30 @@ class RegisterMe extends React.Component {
       googleRecaptchaLauncherEl.src = "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit";
       googleRecaptchaLauncherEl.defer = true;
       document.head.appendChild(googleRecaptchaLauncherEl);
+      this.timerID = setInterval(
+        () => this.checkCaptcha(),
+        1000
+      );
     }
+	}
+	checkCaptcha() {
+    if (grecaptcha.getResponse() !== '') {
+      this.setState({
+        payload: {
+          captcha: 'x',
+        }
+      });
+    }
+    else {
+      this.setState({
+        payload: {
+          captcha: '',
+        }
+      });
+    }
+	}
+	componentWillUnmount() {
+	  clearInterval(this.timerID);
 	}
 	render() {
 		return <form className="register-me" action="?" method="POST">
