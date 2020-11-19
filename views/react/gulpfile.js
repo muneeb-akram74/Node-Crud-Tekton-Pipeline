@@ -92,7 +92,9 @@ gulp.task('serve', function(done) {
 });
 
 gulp.task('default',
-  gulp.series('js', 'css', 'sass', 'serve', function (done) {
+  // , 'css'
+  // , 'sass'
+  gulp.series('js', 'serve', function (done) {
       console.log('task after task array');
       done();
   }),

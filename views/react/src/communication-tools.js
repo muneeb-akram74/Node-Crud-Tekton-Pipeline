@@ -6,6 +6,7 @@ import UserAndId from './billing';
 import Slate from './slate';
 import ErrorBoundary from './error-boundary';
 import 'bootstrap';
+import "./billing.scss";
 
 'use strict';
 

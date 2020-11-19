@@ -3,10 +3,8 @@ TODO: what about old slate? Lock and email
 sender's old message then delete will need more email entitlement.
 The first sender may want to update it.
 Investigate why same Slate was returned.
-TODO: how about only having senderKey, receiverKey
-TODO how about notification of slate created
-TODO keep button width fixed during label changes?
-TODO synchronize message with submit-button for dirty check after successful persist?
+TODO enable button after captcha success
+TODO disable if captcha submission fails
 */
 //  OpenShift sample Node application
 const assert = require('assert');
