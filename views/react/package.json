@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build-2019-08-24": "rm -r lib; babel src -d lib",
-    "build-2019-09-25": "babel build/js/src -d build/js/lib && npx webpack",
     "build": "npx webpack",
     "npx-webpack": "npx webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:watch20201031": "watch \"npm run build && gulp watch\" src",
     "gulp build:watch": "watch \"npm run build && gulp\" src",
     "watch": "webpack --watch",
     "start": "webpack serve --open 'Google Chrome'",
