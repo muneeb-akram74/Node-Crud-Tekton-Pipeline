@@ -1,15 +1,16 @@
 const path = require('path');
 
 module.exports = {
+  watch: true,
   devServer: {
-    // publicPath: '/react/slate/123',
-    port: 3000,
-    proxy: [{
-//      // '/react/slate/123': 'http://localhost:3000/',
-//      target: 'http://localhost:3000/',
-//      pathRewrite: { '/react/slate/123':  '' }
-      '/slate': 'http://localhost:8080/slate',
-    }]
+    port: 8085,
+    proxy: [
+      {
+        context: ['/react/slate/123','/slate','/features'],
+        target: 'http://localhost:8080/',
+      },
+    ],
+    openPage: 'react/slate/123',
   },
   mode: 'development',
   // entry: './build/js/app.min.js',
