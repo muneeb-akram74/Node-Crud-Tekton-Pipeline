@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import store from './redux/store'
 //import UserAndId from './billing';
 import Slate from './slate';
+
 import ErrorBoundary from './error-boundary';
 import 'bootstrap';
 //import "./billing.scss";
@@ -12,7 +13,8 @@ import { act } from 'react-dom/test-utils';
 
 'use strict';
 
-//const Slate = jest.createMockFromModule('S');
+jest.mock('./slate');
+jest.mock('./register-me');
 let container = null;
 beforeEach(() => {
   // setup a DOM element as a render target
@@ -47,5 +49,5 @@ it("renders with ", () => {
     container);
 //    render(<NameInput />, container);
   })
-  expect(container.textContent).toContain("mes");
+  expect(container.textContent).toContain("test");
 });
