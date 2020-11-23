@@ -49,5 +49,5 @@ it("renders with ", () => {
     container);
 //    render(<NameInput />, container);
   })
-  expect(container.textContent).toContain("test");
+  expect(container.textContent).toContain("Hi");
 });
