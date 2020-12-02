@@ -7,7 +7,8 @@ import Slate from './slate';
 import ErrorBoundary from './error-boundary';
 import 'bootstrap';
 import "./billing.scss";
-
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 'use strict';
 
 class CommunicationTools extends React.Component {
