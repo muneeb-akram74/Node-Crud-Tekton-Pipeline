@@ -3,7 +3,7 @@ kind: PipelineRun
 metadata:
   name: nodejs-push
   annotations:
-    # The event we are targeting (ie: pull_request, push)
+    ## The event we are targeting (ie: pull_request, push)
     pipelinesascode.tekton.dev/on-event: "[push]"
 
     # The branch or tag we are targeting (ie: main, refs/tags/*)
