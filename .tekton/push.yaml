@@ -66,24 +66,6 @@ spec:
               workingDir: $(workspaces.source.path)
               script: |
                 exit 0
-      - name: build
-        runAfter:
-        - fetch-repository
-        params:
-        - name: IMAGE
-          value: nodejs-pac
-        - name: TLSVERIFY
-          value: "false"
-        - name: PATH_CONTEXT
-          value: $(params.PATH_CONTEXT)
-        - name: VERSION
-          value: 14-ubi7
-        taskRef:
-          kind: ClusterTask
-          name: s2i-nodejs
-        workspaces:
-        - name: source
-          workspace: workspace
   workspaces:
   - name: source
     volumeClaimTemplate:
