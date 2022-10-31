@@ -10,25 +10,25 @@ import SubmitButton from '../submit-button';
 'use strict';
 
 export default class MockSlate extends React.Component {
-//  constructor(props){
-//    super(props);
-//    this.messageNonDirtySubmitButtonText = 'Change the message to enable submit'
-//    this.state = {
-//        disabled: 'disabled',
-//        notDisabled: false,
-//        message: 'Test',
-//        messageDirty: false,
-//        messageSubmitButtonText: 'Submit message',
-//        messageNonDirtySubmitButtonText: this.messageNonDirtySubmitButtonText,
-//        hasError: false,
-//        showPrivacyNotice: true,
-//    };
-//    this.textAreaRef = React.createRef();
+  constructor(props){
+    super(props);
+    this.messageNonDirtySubmitButtonText = 'Change the message to enable submit'
+    this.state = {
+        disabled: 'disabled',
+        notDisabled: false,
+        message: this.props.message,
+        messageDirty: false,
+        messageSubmitButtonText: 'Submit message',
+        messageNonDirtySubmitButtonText: this.messageNonDirtySubmitButtonText,
+        hasError: false,
+        showPrivacyNotice: true,
+    };
+    this.textAreaRef = React.createRef();
 //    this.handleClick = this.handleClick.bind(this);
 //    this.onMessageChange = this.onMessageChange.bind(this);
 //    this.handlePrivacyNoticeClose = this.handlePrivacyNoticeClose.bind(this);
 //    this.handlePrivacyNoticeOpen = this.handlePrivacyNoticeOpen.bind(this);
-//  }
+  }
 //  
 //  static getDerivedStateFromError(error) {
 //    return { hasError: true };
@@ -163,7 +163,7 @@ export default class MockSlate extends React.Component {
       <div id="slateRow1" className="row">
         <div className="col-sm-6">
           <form id="messageForm">
-            <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={'test'} readOnly></textarea>
+            <textarea id="messageTextArea" rows="10" maxLength={this.props.messageMaxLength} ref={this.textAreaRef} value={this.state.message} readOnly></textarea>
             <p id="readStatus">
               <span className="book-icons">
                 {this.props.readStatus.indexOf('Not') > -1 && <i className="fas fa-book"></i>}

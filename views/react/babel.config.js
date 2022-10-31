@@ -7,7 +7,7 @@ module.exports = function (api) {
   ];
   const plugins = [ 
 //    "babel-plugin-transform-es2015-modules-amd",
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
   ];
 
   return {

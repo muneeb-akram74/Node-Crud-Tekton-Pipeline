@@ -157,7 +157,14 @@ class Slate extends React.Component {
       key: location.href.match(/slate\/(.*?)\//)[1],
       senderKey,
     };
+//    <img id="eventsPlot" 
+//      onError={(e)=>{e.target.onerror = null; e.target.src="https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyArikL-YgzDWKmfbP4ZjpBuh1B4RxUB_vE&center=37.343366,-121.978123&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:A%7C37.344852447509766,-121.97379302978516&markers=color:blue%7Clabel:B%7Cundefined,undefined&markers=color:blue%7Clabel:C%7Cundefined,undefined&markers=color:blue%7Clabel:D%7C37.32357406616211,-122.04275512695312&markers=color:blue%7Clabel:E%7C37.37205505371094,-121.92579650878906&markers=color:blue%7Clabel:F%7C37.35781478881836,-122.0263900756836&markers=color:blue%7Clabel:G%7C37.401222229003906,-122.06617736816406&markers=color:blue%7Clabel:H%7C0,0&markers=color:blue%7Clabel:J%7C37.401222229003906,-122.06617736816406&markers=color:blue%7Clabel:K%7C37.37205505371094,-121.92579650878906&markers=color:blue%7Clabel:L%7C37.401222229003906,-122.06617736816406&markers=color:blue%7Clabel:M%7C37.35781478881836,-122.0263900756836&markers=color:blue%7Clabel:N%7Cundefined,undefined&markers=color:blue%7Clabel:O%7C37.36700439453125,-122.0314712524414&markers=color:blue%7Clabel:P%7C37.358829498291016,-122.02754211425781&markers=color:blue%7Clabel:Q%7C37.344852447509766,-121.97379302978516&markers=color:blue%7Clabel:R%7C37.40021896362305,-121.94804382324219&markers=color:blue%7Clabel:S%7Cundefined,undefined&markers=color:blue%7Clabel:T%7C37.3615608215332,-122.05300903320312&markers=color:blue%7Clabel:V%7Cundefined,undefined&markers=color:blue%7Clabel:W%7C37.32081985473633,-121.94969177246094&markers=color:blue%7Clabel:X%7C37.33079147338867,-121.98822021484375&markers=color:blue%7Clabel:Y%7C37.33515167236328,-121.88964080810547&markers=color:blue%7Clabel:Z%7C37.32328796386719,-122.04762268066406&markers=color:blue%7Clabel:2%7C37.35781478881836,-122.0263900756836&markers=color:blue%7Clabel:3%7C37.344852447509766,-121.97379302978516&markers=color:blue%7Clabel:4%7C0,0&markers=color:blue%7Clabel:5%7C37.26394271850586,-121.93144226074219&markers=color:blue%7Clabel:6%7C37.33251953125,-121.92769622802734"}}/>
     return <div id="slate">
+    <img 
+    id="eventsPlot" 
+    src='x.png'
+    onError={(e)=>{e.target.onerror = null; e.target.style.display='none'}}
+  />
       <div><label>Message:</label></div>
       <div id="slateRow1" className="row">
         <div className="col-sm-6">
