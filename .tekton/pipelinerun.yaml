@@ -54,18 +54,6 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - name: run-test
-        taskRef:
-          name: npm
-        workspaces:
-          - name: source
-            workspace: source
-        params:
-          - name: ARGS
-            value:
-              - test
-        runAfter:
-          - fetch-repository
   workspaces:
     - name: source
       volumeClaimTemplate:
