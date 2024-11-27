@@ -55,3 +55,5 @@ nodejs-rest-http-crud   nodejs-rest-http-crud-opentel.apps-crc.testing          
 #### Running on Openshift with traces enabled
 
 * [Read more](./OTEL.md)
+
+- Lavanya says that This is nodejs-ex pull request.
